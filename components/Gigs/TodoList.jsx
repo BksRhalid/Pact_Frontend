@@ -1,4 +1,4 @@
-import React,{ useEffect } from "react";
+import React,{ useState, useEffect } from "react";
 import {
     Badge,
     Box,
@@ -7,11 +7,11 @@ import {
     Text,
     useToast,
     } from "@chakra-ui/react";
-import useAuth from "../hooks/useAuth";
+import useAuth from "@/hooks/useAuth";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "@/firebase";
 import { FaToggleOff, FaToggleOn, FaTrash } from "react-icons/fa";
-import { deleteTodo, toggleTodoStatus } from "../pages/api/todo";
+import { deleteTodo, toggleTodoStatus } from "@/pages/api/todo";
 
 
 const TodoList = () => {

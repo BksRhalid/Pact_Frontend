@@ -9,8 +9,8 @@ Stack,
 Select,
 useToast,
 } from "@chakra-ui/react";
-import useAuth from "../hooks/useAuth";
-import { addTodo } from "../pages/api/todo";
+import useAuth from "../../hooks/useAuth";
+import { addTodo } from "../../pages/api/todo";
 
 
 
