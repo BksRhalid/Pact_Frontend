@@ -15,26 +15,29 @@ import { deleteTodo, toggleTodoStatus } from "../pages/api/todo";
 
 
 const TodoList = () => {
-    const [todos, setTodos] = React.useState([]);
+
+    const [todos, setTodos] = useState([]);
     const {  user } = useAuth();
     const toast = useToast();
+
+    // Refresh todos
     const refreshData = () => {
-    if (!user) {
-        setTodos([]);
-        return;
-    }
-    const q = query(collection(db, "job"), where("user", "==", user.uid));
-    onSnapshot(q, (querySnapchot) => {
-    let ar = [];
-    querySnapchot.docs.forEach((doc) => {
-    ar.push({ id: doc.id, ...doc.data() });
-    });
-    setTodos(ar);
-    });
+        if (!user) {
+            setTodos([]);
+            return;
+        }
+        const q = query(collection(db, "job"), where("user", "==", user.uid));
+        onSnapshot(q, (querySnapchot) => {
+            let ar = [];
+            querySnapchot.docs.forEach((doc) => {ar.push({ id: doc.id, ...doc.data() });});
+            setTodos(ar);
+            });
     };
+
     useEffect(() => {
-    refreshData();
+        refreshData();
     }, [user]);
+
     const handleTodoDelete = async (id) => {
         if (confirm("Are you sure you wanna delete this todo?")) {
         deleteTodo(id);
@@ -42,12 +45,12 @@ const TodoList = () => {
         }
     };
     const handleToggle = async (id, status) => {
-    const newStatus = status == "completed" ? "pending" : "completed";
-    await toggleTodoStatus({ docId: id, status: newStatus });
-    toast({
-    title: `Todo marked ${newStatus}`,
-    status: newStatus == "completed" ? "success" : "warning",
-    });
+        const newStatus = status == "completed" ? "pending" : "completed";
+        await toggleTodoStatus({ docId: id, status: newStatus });
+        toast({
+        title: `Todo marked ${newStatus}`,
+        status: newStatus == "completed" ? "success" : "warning",
+        });
     };
 return (
 <Box mt={5}>
