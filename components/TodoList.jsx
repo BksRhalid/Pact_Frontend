@@ -23,7 +23,7 @@ const TodoList = () => {
         setTodos([]);
         return;
     }
-    const q = query(collection(db, "todo"), where("user", "==", user.uid));
+    const q = query(collection(db, "job"), where("user", "==", user.uid));
     onSnapshot(q, (querySnapchot) => {
     let ar = [];
     querySnapchot.docs.forEach((doc) => {

@@ -9,7 +9,7 @@ import {
 
 const addTodo = async ({ userId, title, description, status }) => {
   try {
-    await addDoc(collection(db, "todo"), {
+    await addDoc(collection(db, "job"), {
       user: userId,
       title: title,
       description: description,
@@ -21,8 +21,8 @@ const addTodo = async ({ userId, title, description, status }) => {
 
 const toggleTodoStatus = async ({ docId, status }) => {
   try {
-    const todoRef = doc(db, "todo", docId);
-    await updateDoc(todoRef, {
+    const jobRef = doc(db, "job", docId);
+    await updateDoc(jobRef, {
       status,
     });
   } catch (err) {
@@ -32,8 +32,8 @@ const toggleTodoStatus = async ({ docId, status }) => {
 
 const deleteTodo = async (docId) => {
   try {
-    const todoRef = doc(db, "todo", docId);
-    await deleteDoc(todoRef);
+    const jobRef = doc(db, "job", docId);
+    await deleteDoc(jobRef);
   } catch (err) {
     console.log(err);
   }

@@ -17,9 +17,9 @@ import { addTodo } from "../pages/api/todo";
 
 const AddTodo = () => {
     const [title, setTitle] = useState("");
-    const [description, setDescription] = React.useState("");
-    const [status, setStatus] = React.useState("pending");
-    const [isLoading, setIsLoading] = React.useState(false);
+    const [description, setDescription] = useState("");
+    const [status, setStatus] = useState("pending");
+    const [isLoading, setIsLoading] = useState(false);
     const toast = useToast();
     const { isLoggedIn, user } = useAuth();
 
@@ -78,6 +78,8 @@ return (
             <Button
             onClick={() => handleTodoCreate()}
             disabled={title.length < 1 || description.length < 1 || isLoading}
+            isLoading={isLoading} 
+            LoadingText="Submitting"
             variantColor="teal"
             variant="solid"
             >

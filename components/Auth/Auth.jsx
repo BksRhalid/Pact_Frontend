@@ -2,8 +2,8 @@ import React from "react";
 import { Box, Button, Link, Text, useColorMode } from "@chakra-ui/react";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { FaGoogle, FaMoon, FaSun } from "react-icons/fa";
-import { auth } from "../firebase";
-import useAuth from "../hooks/useAuth";
+import { auth } from "../../firebase";
+import useAuth from "../../hooks/useAuth";
 const Auth = () => {
 const { toggleColorMode, colorMode } = useColorMode();
 const { isLoggedIn, user } = useAuth();
