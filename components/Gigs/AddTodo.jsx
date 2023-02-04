@@ -79,7 +79,6 @@ return (
             onClick={() => handleTodoCreate()}
             disabled={title.length < 1 || description.length < 1 || isLoading}
             isLoading={isLoading} 
-            LoadingText="Submitting"
             variantColor="teal"
             variant="solid"
             >

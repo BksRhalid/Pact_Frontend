@@ -9,22 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/icon": "^3.0.15",
+    "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/react": "^2.4.9",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@next/font": "13.1.6",
+    "@rainbow-me/rainbowkit": "^0.8.1",
+    "eslint-config-next": "^13.1.5",
+    "ethers": "^5.7.2",
     "firebase": "^9.16.0",
     "framer-motion": "^9.0.0",
     "next": "13.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
-    "@rainbow-me/rainbowkit": "^0.8.1",
-    "eslint-config-next": "^13.1.5",
-    "ethers": "^5.7.2",
     "wagmi": "^0.10.14"
   },
   "main": "index.js",
   "author": "rhalid",
   "license": "MIT"
-  }
+}

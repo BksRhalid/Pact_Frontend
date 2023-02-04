@@ -1,6 +1,6 @@
 import React from 'react'
 import { Flex, Text, Button, useToast, Spinner, Container, SimpleGrid,  Alert, AlertIcon, Link  } from "@chakra-ui/react";
-import Card from '@/components/Card'
+import Card from '@/components/CardJob'
 import { abi, contractAddress } from "@/constants";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
