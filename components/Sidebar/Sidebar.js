@@ -25,6 +25,7 @@ import {
   Button,
   useColorMode,
   Show,
+  Divider,
 } from "@chakra-ui/react";
 import {
   FiHome,
@@ -83,28 +84,33 @@ const SidebarWithHeader = ({ children }) => {
 
 const SidebarContent = ({ onClose, ...rest }) => {
   return (
-    <Box
-      transition="3s ease"
-      bg={useColorModeValue("white", "gray.900")}
-      borderRight="1px"
-      borderRightColor={useColorModeValue("gray.200", "gray.700")}
-      w={{ base: "full", md: 60 }}
-      pos="fixed"
-      h="full"
-      {...rest}
-    >
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          <Image src="/img/pactLogo.png" alt="logo" width="50" height="50" />
-        </Text>
-        <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
-      </Flex>
-      {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}>
-          {link.name}
-        </NavItem>
-      ))}
-    </Box>
+    <>
+      <Box
+        transition="3s ease"
+        bg={useColorModeValue("white", "gray.900")}
+        borderRight="1px"
+        borderRightColor={useColorModeValue("gray.200", "gray.700")}
+        w={{ base: "full", md: 60 }}
+        pos="fixed"
+        h="full"
+        {...rest}
+      >
+        <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
+          <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+            <Image src="/img/pactLogo.png" alt="logo" width="50" height="50" />
+          </Text>
+          <CloseButton
+            display={{ base: "flex", md: "none" }}
+            onClick={onClose}
+          />
+        </Flex>
+        {LinkItems.map((link) => (
+          <NavItem key={link.name} icon={link.icon}>
+            {link.name}
+          </NavItem>
+        ))}
+      </Box>
+    </>
   );
 };
 
@@ -166,14 +172,14 @@ const MobileNav = ({ onOpen, ...rest }) => {
         aria-label="open menu"
         icon={<FiMenu />}
       />
-      <Text
-        display={{ base: "block", md: "none" }}
+      {/* <Text
+        display={{ base: "flex", md: "none" }}
         fontSize="2xl"
         fontFamily="monospace"
         fontWeight="bold"
       >
         <Image src="/img/pactLogo.png" alt="logo" width="30" height="30" />
-      </Text>
+      </Text> */}
       <Show above="md">
         <Link href="/newjob">
           <Button
@@ -181,8 +187,8 @@ const MobileNav = ({ onOpen, ...rest }) => {
             color={"#552DF1"}
             variant="outline"
             border={"2px solid #552DF1"}
-            mr={4}
-            leftIcon={<AddIcon />}
+            mr={{ base: "2", md: "4" }}
+            rightIcon={<AddIcon />}
             _hover={{
               variant: "outline",
               color: "white",
@@ -195,6 +201,25 @@ const MobileNav = ({ onOpen, ...rest }) => {
       </Show>
 
       <HStack spacing={{ base: "0", md: "6" }}>
+        <Show below="md">
+          <Link href="/newjob">
+            <Button
+              size={"sm"}
+              color="#552DF1"
+              variant="solid"
+              border={"2px solid #552DF1"}
+              mr={{ base: "2", md: "4" }}
+              rightIcon={<AddIcon />}
+              _hover={{
+                variant: "outline",
+                color: "white",
+                bg: "#552DF1",
+              }}
+            >
+              Créer un Job
+            </Button>
+          </Link>
+        </Show>
         <IconButton
           size="lg"
           variant="ghost"
@@ -239,30 +264,6 @@ const MobileNav = ({ onOpen, ...rest }) => {
               <MenuItem>Settings</MenuItem>
               <MenuItem>Billing</MenuItem>
               <MenuDivider />
-              <Show below="md">
-                <Link
-                  justifyContent={"center"}
-                  alignContent={"center"}
-                  alignItems={"center"}
-                  href="/newjob"
-                >
-                  <Button
-                    mt="10px"
-                    size={"sm"}
-                    color={"#552DF1"}
-                    variant="outline"
-                    border={"2px solid #552DF1"}
-                    leftIcon={<AddIcon />}
-                    _hover={{
-                      variant: "outline",
-                      color: "white",
-                      bg: "#552DF1",
-                    }}
-                  >
-                    Créer un Job
-                  </Button>
-                </Link>
-              </Show>
               <MenuItem>Sign out</MenuItem>
             </MenuList>
           </Menu>
