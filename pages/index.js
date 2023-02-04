@@ -18,11 +18,6 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Sidebar />
-
-      {/* <Layout>
-        <Flex w="100%" direction="column" align="center" justify="center">
-        </Flex>
-      </Layout> */}
     </>
   );
 }

@@ -25,7 +25,6 @@ import {
   Button,
   useColorMode,
   Show,
-  Spacer,
 } from "@chakra-ui/react";
 import {
   FiHome,
@@ -149,121 +148,40 @@ const MobileNav = ({ onOpen, ...rest }) => {
   const { toggleColorMode, colorMode } = useColorMode();
 
   return (
-    <Flex direction={"column"} alignItems={"center"}>
-      <Flex
-        ml={{ base: 0, md: 60 }}
-        px={{ base: 4, md: 4 }}
-        height="20"
-        w="full"
-        alignItems="center"
-        bg={useColorModeValue("white", "gray.900")}
-        borderBottomWidth="1px"
-        borderBottomColor={useColorModeValue("gray.200", "gray.700")}
-        justifyContent={{ base: "space-between", md: "flex-end" }}
-        {...rest}
+    <Flex
+      ml={{ base: 0, md: 60 }}
+      px={{ base: 4, md: 4 }}
+      height="20"
+      alignItems="center"
+      bg={useColorModeValue("white", "gray.900")}
+      borderBottomWidth="1px"
+      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      justifyContent={{ base: "space-between", md: "flex-end" }}
+      {...rest}
+    >
+      <IconButton
+        display={{ base: "flex", md: "none" }}
+        onClick={onOpen}
+        variant="outline"
+        aria-label="open menu"
+        icon={<FiMenu />}
+      />
+      <Text
+        display={{ base: "block", md: "none" }}
+        fontSize="2xl"
+        fontFamily="monospace"
+        fontWeight="bold"
       >
-        <IconButton
-          display={{ base: "flex", md: "none" }}
-          onClick={onOpen}
-          variant="outline"
-          aria-label="open menu"
-          icon={<FiMenu />}
-        />
-        <Text
-          display={{ base: "flex", md: "none" }}
-          fontSize="2xl"
-          fontFamily="monospace"
-          fontWeight="bold"
-        >
-          <Image src="/img/pactLogo.png" alt="logo" width="50" height="50" />
-        </Text>
-        <Show above="md">
-          <Link href="/newjob">
-            <Button
-              size={"sm"}
-              color={"#552DF1"}
-              variant="outline"
-              border={"2px solid #552DF1"}
-              mr={4}
-              leftIcon={<AddIcon />}
-              _hover={{
-                variant: "outline",
-                color: "white",
-                bg: "#552DF1",
-              }}
-            >
-              Créer un Job
-            </Button>
-          </Link>
-        </Show>
-
-        <HStack spacing={{ base: "0", md: "6" }}>
-          <IconButton
-            size="lg"
-            variant="ghost"
-            aria-label="open menu"
-            icon={<FiBell />}
-          />
-          <Flex alignItems={"center"}>
-            <Menu>
-              <MenuButton
-                py={2}
-                transition="all 0.3s"
-                _focus={{ boxShadow: "none" }}
-              >
-                <HStack>
-                  <Avatar
-                    size={"sm"}
-                    src={
-                      "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                    }
-                  />
-                  <VStack
-                    display={{ base: "none", md: "flex" }}
-                    alignItems="flex-start"
-                    spacing="1px"
-                    ml="2"
-                  >
-                    <Text fontSize="sm">Jane Doe</Text>
-                    <Text fontSize="xs" color="gray.600">
-                      Client
-                    </Text>
-                  </VStack>
-                  <Box display={{ base: "none", md: "flex" }}>
-                    <FiChevronDown />
-                  </Box>
-                </HStack>
-              </MenuButton>
-              <MenuList
-                bg={useColorModeValue("white", "gray.900")}
-                borderColor={useColorModeValue("gray.200", "gray.700")}
-              >
-                <MenuItem>Profile</MenuItem>
-                <MenuItem>Settings</MenuItem>
-                <MenuItem>Billing</MenuItem>
-                <MenuDivider />
-                <Button onClick={() => toggleColorMode()}>
-                  {colorMode == "dark" ? <FaSun /> : <FaMoon />}
-                </Button>{" "}
-                <MenuItem>Sign out</MenuItem>
-              </MenuList>
-            </Menu>
-          </Flex>
-        </HStack>
-      </Flex>
-      <Show below="md">
-        <Link
-          justifyContent={"center"}
-          alignContent={"center"}
-          alignItems={"center"}
-          href="/newjob"
-        >
+        <Image src="/img/pactLogo.png" alt="logo" width="30" height="30" />
+      </Text>
+      <Show above="md">
+        <Link href="/newjob">
           <Button
-            mt="10px"
             size={"sm"}
             color={"#552DF1"}
             variant="outline"
             border={"2px solid #552DF1"}
+            mr={4}
             leftIcon={<AddIcon />}
             _hover={{
               variant: "outline",
@@ -274,8 +192,82 @@ const MobileNav = ({ onOpen, ...rest }) => {
             Créer un Job
           </Button>
         </Link>
-        <Spacer />
       </Show>
+
+      <HStack spacing={{ base: "0", md: "6" }}>
+        <IconButton
+          size="lg"
+          variant="ghost"
+          aria-label="open menu"
+          icon={<FiBell />}
+        />
+        <Flex alignItems={"center"}>
+          <Menu>
+            <MenuButton
+              py={2}
+              transition="all 0.3s"
+              _focus={{ boxShadow: "none" }}
+            >
+              <HStack>
+                <Avatar
+                  size={"sm"}
+                  src={
+                    "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
+                  }
+                />
+                <VStack
+                  display={{ base: "none", md: "flex" }}
+                  alignItems="flex-start"
+                  spacing="1px"
+                  ml="2"
+                >
+                  <Text fontSize="sm">Jane Doe</Text>
+                  <Text fontSize="xs" color="gray.600">
+                    Client
+                  </Text>
+                </VStack>
+                <Box display={{ base: "none", md: "flex" }}>
+                  <FiChevronDown />
+                </Box>
+              </HStack>
+            </MenuButton>
+            <MenuList
+              bg={useColorModeValue("white", "gray.900")}
+              borderColor={useColorModeValue("gray.200", "gray.700")}
+            >
+              <MenuItem>Profile</MenuItem>
+              <MenuItem>Settings</MenuItem>
+              <MenuItem>Billing</MenuItem>
+              <MenuDivider />
+              <Show below="md">
+                <Link
+                  justifyContent={"center"}
+                  alignContent={"center"}
+                  alignItems={"center"}
+                  href="/newjob"
+                >
+                  <Button
+                    mt="10px"
+                    size={"sm"}
+                    color={"#552DF1"}
+                    variant="outline"
+                    border={"2px solid #552DF1"}
+                    leftIcon={<AddIcon />}
+                    _hover={{
+                      variant: "outline",
+                      color: "white",
+                      bg: "#552DF1",
+                    }}
+                  >
+                    Créer un Job
+                  </Button>
+                </Link>
+              </Show>
+              <MenuItem>Sign out</MenuItem>
+            </MenuList>
+          </Menu>
+        </Flex>
+      </HStack>
     </Flex>
   );
 };
