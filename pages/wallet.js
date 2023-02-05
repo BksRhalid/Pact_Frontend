@@ -1,46 +1,8 @@
-import Head from "next/head";
 import React from "react";
-import {
-  Flex,
-  Box,
-  Stack,
-  Button,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react";
+import { Flex, Text, useToast, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { useAccount, useProvider, useSigner } from "wagmi";
-import { useRouter } from "next/router";
-import { ethers } from "ethers";
-import { abi, contractAddress } from "@/constants";
-import { MdAdd } from "react-icons/md";
-import Layout from "./layout";
-import {
-  useColorModeValue,
-  useColorMode,
-  CircularProgress,
-  CircularProgressLabel,
-  Grid,
-  Icon,
-  Progress,
-  SimpleGrid,
-  Spacer,
-  Stat,
-  StatHelpText,
-  StatLabel,
-  StatNumber,
-  Table,
-  Tbody,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
-// Styles for the circular progressbar
-import medusa from "../public/img/pactLogo.png";
-// Custom components
-import Card from "@/components/Card/Card.js";
-import CardBody from "@/components/Card/CardBody.js";
+import { useColorModeValue } from "@chakra-ui/react";
 
 export default function Wallet() {
   //WAGMI

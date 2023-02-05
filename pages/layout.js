@@ -1,6 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import Image from "next/image";
+import logo from "../public/img/pactLogo.png";
 
 import {
   IconButton,
@@ -114,12 +115,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
         <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
           <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
             <Link href={"/"}>
-              <Image
-                src="/img/pactLogo.png"
-                alt="logo"
-                width="50"
-                height="50"
-              />
+              <Image src={logo} alt="logo" width={70} height={50} />
             </Link>
           </Text>
           <CloseButton

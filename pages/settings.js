@@ -8,28 +8,8 @@ import { ethers } from "ethers";
 import { abi, contractAddress } from "@/constants";
 import { MdAdd } from "react-icons/md";
 import Layout from "./layout";
-import {
-  useColorModeValue,
-  useColorMode,
-  CircularProgress,
-  CircularProgressLabel,
-  Grid,
-  Icon,
-  Progress,
-  SimpleGrid,
-  Spacer,
-  Stat,
-  StatHelpText,
-  StatLabel,
-  StatNumber,
-  Table,
-  Tbody,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
+import { useColorModeValue, Grid } from "@chakra-ui/react";
 // Styles for the circular progressbar
-import medusa from "../public/img/pactLogo.png";
 // Custom components
 import Card from "@/components/Card/Card.js";
 import CardBody from "@/components/Card/CardBody.js";

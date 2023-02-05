@@ -43,10 +43,10 @@ const Navbar = () => {
     <Container maxW="7xl" p={{ base: 5, md: 10 }}>
        <Image
                 boxSize='70px'
-                objectFit='cover'
                 src="/img/pactLogo.png"
                 alt="Pact Logo"
                 mr={4}
+                width="70" height="50"
               />
       <Flex mb="30px" align="center">
         <HStack>

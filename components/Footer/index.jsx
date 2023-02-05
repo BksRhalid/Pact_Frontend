@@ -1,4 +1,7 @@
 import Image from 'next/image';
+import Pactlogo from "@/public/img/pactLogo.png";
+
+
 import {
     Box,
     chakra,
@@ -19,7 +22,7 @@ import {
         justify={'center'}
         >
         <VStack>
-           <Image src={'../img/pactLogo.png' } alt={'Pact logo'} w="50px" h="auto"/>
+        <Image src={Pactlogo} alt="logo" width={70} height={50} />
             {/* <Text
             fontSize={'sm'}
             fontWeight={'bold'}
@@ -64,9 +67,8 @@ import {
         bg={useColorModeValue('gray.50', 'gray.900')}
         color={useColorModeValue('gray.700', 'gray.200')}>
         <Container
-            as={Stack}
-            minW={'50vw'}
           as={Stack}
+          minW={'50vw'}
           py={4}
           direction={{ base: 'column', md: 'row' }}
           spacing={4}

@@ -39,9 +39,6 @@ import { abi, contractAddress } from "@/constants";
 import { useAccount, useBalance, useProvider, useSigner } from "wagmi";
 import { ethers } from "ethers";
 
-import Layout from "@/components/Layout";
-import Gigs from "@/components/Gigs/Gigs";
-
 export default function Home() {
   const { address, isConnected } = useAccount();
   const provider = useProvider();
@@ -90,7 +87,7 @@ export default function Home() {
       <VStack
         as="form"
         spacing={8}
-        w="70%"
+        w={{ base: "100%", md: "70%" }}
         bg={useColorModeValue("white", "gray.700")}
         rounded="lg"
         boxShadow="lg"
@@ -382,7 +379,7 @@ export default function Home() {
       <VStack
         as="form"
         spacing={8}
-        w="30%"
+        w={{ base: "100%", md: "30%" }}
         bg={useColorModeValue("white", "gray.700")}
         rounded="lg"
         boxShadow="lg"
