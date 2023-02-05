@@ -1,6 +1,14 @@
 import Head from "next/head";
 import React from "react";
-import { Flex, Box, Stack, Button, Text, useToast } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Stack,
+  Button,
+  Text,
+  useToast,
+  VStack,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { useRouter } from "next/router";
@@ -49,38 +57,45 @@ export default function Wallet() {
 
   //FUNCTION TO ADD A TODO
   return (
-    <Flex flexDirection="column" pt={{ base: "5px", md: "5px" }}>
-      <Grid
-        templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
-        my="15px"
-        gap="24px"
-        color={useColorModeValue("gray.900", "gray.400")}
+    <Flex>
+      <VStack
+        as="form"
+        spacing={8}
+        w="100%"
+        bg={useColorModeValue("white", "gray.700")}
+        rounded="lg"
+        boxShadow="lg"
+        p={{ base: 5, sm: 10 }}
       >
-        {/* Welcome Card */}
-        <Card
-          p="0px"
-          gridArea={{ md: "1 / 1 / 2 / 3", "2xl": "auto" }}
-          bg={useColorModeValue("white", "gray.400")}
-          bgPosition="50%"
-          rounded="xl"
-        >
-          <CardBody w="100%" h="100%">
-            <Flex flexDirection={{ sm: "column", lg: "row" }} w="100%" h="100%">
-              <Flex
-                flexDirection="column"
-                h="100%"
-                p="22px"
-                minW="60%"
-                lineHeight="1.6"
-              >
-                <Text fontSize="sm" fontWeight="bold">
-                  Browse Wallet
-                </Text>
-              </Flex>
-            </Flex>
-          </CardBody>
-        </Card>
-      </Grid>
+        <VStack spacing={4} w="100%">
+          <Text
+            fontSize="2xl"
+            fontWeight="bold"
+            color={useColorModeValue("gray.700", "white")}
+          >
+            Wallet
+          </Text>
+          <Text
+            fontSize="md"
+            fontWeight="bold"
+            color={useColorModeValue("gray.700", "white")}
+          >
+            {address}
+          </Text>
+          <Text
+            fontSize="md"
+            fontWeight="bold"
+            color={useColorModeValue("gray.700", "white")}
+          >
+            Balance
+          </Text>
+          <Text
+            fontSize="md"
+            fontWeight="bold"
+            color={useColorModeValue("gray.700", "white")}
+          ></Text>
+        </VStack>
+      </VStack>
     </Flex>
   );
 }

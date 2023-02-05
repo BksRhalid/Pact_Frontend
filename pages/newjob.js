@@ -15,7 +15,15 @@ import {
   useColorModeValue,
   useToast,
   Textarea,
+  Grid,
+  Spacer,
+  Icon,
 } from "@chakra-ui/react";
+import { CloseIcon, AddIcon } from "@chakra-ui/icons";
+
+import Card from "@/components/Card/Card.js";
+import CardBody from "@/components/Card/CardBody.js";
+import CardHeader from "@/components/Card/CardHeader.js";
 import Layout from "@/components/Layout";
 import { useState } from "react";
 import { useAccount, useProvider, useSigner } from "wagmi";
@@ -24,6 +32,7 @@ import { ethers } from "ethers";
 import { abi, contractAddress } from "@/constants";
 import { MdAdd } from "react-icons/md";
 import Sidebar from "../components/Sidebar/Sidebar";
+import { BsArrowRight } from "react-icons/bs";
 
 const newJob = () => {
   //WAGMI
@@ -69,72 +78,87 @@ const newJob = () => {
   };
 
   return (
-    <Flex direction="column" alignItems="center" w="100%">
-      <Container minH="70vh">
-        <Stack spacing={4}>
-          <Stack align="center" spacing={2}>
-            <Heading fontSize={{ base: "xl", sm: "3xl" }} as="h1" noOfLines={1}>
-              Add a new gig
-            </Heading>
-            <Text fontSize={{ base: "sm", sm: "md" }}>description to do</Text>
+    <Flex>
+      <VStack
+        as="form"
+        spacing={8}
+        w="100%"
+        bg={useColorModeValue("white", "gray.700")}
+        rounded="lg"
+        boxShadow="lg"
+        p={{ base: 5, sm: 10 }}
+      >
+        <VStack spacing={4} w="100%">
+          <Stack w="100%" spacing={3} direction={{ base: "column", md: "row" }}>
+            <FormControl id="name">
+              <FormLabel>Job's Name</FormLabel>
+              <Input
+                type="text"
+                placeholder="Ahmad"
+                rounded="md"
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </FormControl>
+            <FormControl id="budget">
+              <FormLabel>Budget</FormLabel>
+              <Input type="number" placeholder="budget" rounded="md" />
+            </FormControl>
           </Stack>
-          <Flex mt="1rem" direction="column" width="100%">
-            <Box pos="relative">
-              <Box
-                pos="absolute"
-                top="-2px"
-                right="-2px"
-                bottom="-2px"
-                left="-2px"
-                rounded="lg"
-                bgGradient="linear(to-l, #7928CA,#FF0080)"
-                transform="rotate(0deg)"
-              ></Box>
-              <VStack
-                as="form"
-                pos="relative"
-                spacing={8}
-                p={6}
-                bg={useColorModeValue("white", "gray.700")}
-                rounded="lg"
-                boxShadow="lg"
-              >
-                <FormControl id="task">
-                  <FormLabel>Description</FormLabel>
-                  <Textarea
-                    type="textarea"
-                    rounded="md"
-                    placeholder="Describe here the job you want to propose to the community"
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                  <FormLabel>Price :</FormLabel>
-                  <Input
-                    type="number"
-                    rounded="md"
-                    placeholder="How much you will pay your worker in ETH"
-                    onChange={(e) => setPrice(e.target.value)}
-                  />
-                </FormControl>
-                <Button
-                  leftIcon={<MdAdd />}
-                  bgGradient="linear(to-l, #7928CA,#FF0080)"
-                  _hover={{
-                    bgGradient: "linear(to-r, green.400, green.800)",
-                  }}
-                  color="white"
-                  variant="solid"
-                  size="md"
-                  rounded="md"
-                  w="100%"
-                  onClick={() => addjob()}
-                >
-                  Add this job
-                </Button>
-              </VStack>
-            </Box>
+          <FormControl id="subject">
+            <FormLabel>Subject</FormLabel>
+            <Input
+              type="text"
+              placeholder="Are you available for freelance work?"
+              rounded="md"
+              onChange={(e) => setPrice(e.target.value)}
+            />
+          </FormControl>
+          <FormControl id="message">
+            <FormLabel>Message</FormLabel>
+            <Textarea size="lg" placeholder="Enter your message" rounded="md" />
+          </FormControl>
+        </VStack>
+        <VStack w="100%">
+          <Flex w="100%" justify="space-between">
+            <Button
+              leftIcon={<MdAdd />}
+              size={"sm"}
+              color={"green.500"}
+              variant="outline"
+              border={"2px solid #38A169"}
+              mr={{ base: "2", md: "4" }}
+              _hover={{
+                variant: "outline",
+                color: "white",
+                bg: "green.500",
+              }}
+              w={{ base: "100%", md: "50%" }}
+              onClick={() => addjob()}
+            >
+              Save as draft
+            </Button>
+            <Spacer />
+            <Button
+              leftIcon={<MdAdd />}
+              size={"sm"}
+              color="white"
+              bg="#552DF1"
+              variant="solid"
+              border={"2px solid #552DF1"}
+              mr={{ base: "2", md: "4" }}
+              _hover={{
+                variant: "outline",
+                color: "#552DF1",
+                bg: "white",
+              }}
+              w={{ base: "100%", md: "50%" }}
+              onClick={() => addjob()}
+            >
+              Add this job
+            </Button>
           </Flex>
-        </Stack>
-      </Container>
+        </VStack>
+      </VStack>
     </Flex>
   );
 };

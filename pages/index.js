@@ -1,8 +1,16 @@
 import Head from "next/head";
 import React from "react";
-import { Flex, Box, Stack, Button, Text, useToast } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Stack,
+  Button,
+  Text,
+  useToast,
+  Show,
+} from "@chakra-ui/react";
 import { useState } from "react";
-import { useAccount, useProvider, useSigner } from "wagmi";
+import { useAccount, useProvider, useSigner, useBalance } from "wagmi";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import { abi, contractAddress } from "@/constants";
@@ -46,7 +54,7 @@ import {
 } from "@/components/Icons/Icons.js";
 import DashboardTableRow from "@/components/Tables/DashboardTableRow";
 import TimelineRow from "@/components/Tables/TimelineRow";
-import { AiFillCheckCircle } from "react-icons/ai";
+import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 import { BiHappy } from "react-icons/bi";
 import { BsArrowRight } from "react-icons/bs";
 import {
@@ -72,7 +80,7 @@ export default function Dashboard() {
     <Flex flexDirection="column" pt={{ base: "5px", md: "5px" }}>
       <Grid
         templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
-        my="15px"
+        my="10px"
         gap="24px"
         color={useColorModeValue("gray.900", "gray.400")}
       >
@@ -140,8 +148,10 @@ export default function Dashboard() {
         </Card>
       </Grid>
       <Grid
-        templateColumns={{ sm: "1fr", md: "1fr 1fr", lg: "2fr 1fr" }}
+        templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
+        my="12px"
         gap="24px"
+        color={useColorModeValue("gray.900", "gray.400")}
       >
         {/* Projects */}
         <Card
@@ -181,22 +191,17 @@ export default function Dashboard() {
                   fontFamily="Plus Jakarta Display"
                   borderBottomColor="#56577A"
                 >
-                  Companies
+                  Jobs
                 </Th>
-                <Th
-                  color="gray.400"
-                  fontFamily="Plus Jakarta Display"
-                  borderBottomColor="#56577A"
-                >
-                  Members
-                </Th>
-                <Th
-                  color="gray.400"
-                  fontFamily="Plus Jakarta Display"
-                  borderBottomColor="#56577A"
-                >
-                  Budget
-                </Th>
+                <Show above="xs">
+                  <Th
+                    color="gray.400"
+                    fontFamily="Plus Jakarta Display"
+                    borderBottomColor="#56577A"
+                  >
+                    Budget
+                  </Th>
+                </Show>
                 <Th
                   color="gray.400"
                   fontFamily="Plus Jakarta Display"
@@ -209,11 +214,9 @@ export default function Dashboard() {
             <Tbody>
               <DashboardTableRow
                 name={"row.name"}
-                logo={"row.logo"}
-                members={"row.members"}
                 budget={"row.budget"}
                 progression={"row.progression"}
-                lastItem={false}
+                lastItem={null}
               />
             </Tbody>
           </Table>
@@ -230,40 +233,66 @@ export default function Dashboard() {
                 Wallet Overview
               </Text>
               <Flex align="center">
-                <Icon
-                  as={AiFillCheckCircle}
-                  color="green.500"
-                  w="15px"
-                  h="15px"
-                  me="5px"
-                />
-                <Text fontSize="sm" color="gray.400" fontWeight="normal">
-                  <Text fontWeight="bold" as="span" color="gray.400">
-                    +30%
-                  </Text>{" "}
-                  this month
-                </Text>
+                {isConnected ? (
+                  <>
+                    <Icon
+                      as={AiFillCheckCircle}
+                      color="green.500"
+                      w="15px"
+                      h="15px"
+                      me="5px"
+                    />
+                    <Text fontSize="sm" color="gray.400" fontWeight="normal">
+                      <Text fontWeight="bold" as="span" color="gray.400">
+                        +30%
+                      </Text>{" "}
+                      this useBalance
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Icon
+                      as={AiFillCloseCircle}
+                      color="red.500"
+                      w="15px"
+                      h="15px"
+                      me="5px"
+                    />
+                    <Text fontSize="sm" fontWeight="bold">
+                      {" "}
+                      Not connected
+                    </Text>
+                  </>
+                )}
               </Flex>
             </Flex>
           </CardHeader>
           <CardBody>
-            <Flex direction="column" lineHeight="21px">
-              <TimelineRow
-                logo={"row.logo"}
-                title={"row.title"}
-                date={"row.date"}
-                color={"row.color"}
-                index={"index"}
-                arrLength={1}
-              />
-            </Flex>
+            {isConnected ? (
+              <Flex direction="column" lineHeight="21px">
+                <TimelineRow
+                  logo={"row.logo"}
+                  title={"row.title"}
+                  date={"row.date"}
+                  color={"row.color"}
+                  index={"index"}
+                  arrLength={1}
+                />
+              </Flex>
+            ) : (
+              <Flex align={"center"}>
+                <Text as="b" fontSize="xs">
+                  Merci de vous connecter à votre wallet
+                </Text>
+              </Flex>
+            )}
           </CardBody>
         </Card>
       </Grid>
       <Grid
         templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
-        my="5px"
-        gap="10px"
+        my="10px"
+        gap="24px"
         color={useColorModeValue("gray.900", "gray.400")}
       >
         {/* Satisfaction Rate */}
@@ -282,12 +311,22 @@ export default function Dashboard() {
             </Flex>
           </CardHeader>
         </Card>
-        {/* Referral Tracking */}
+        {/* Card title */}
         <Card
           bg={useColorModeValue("white", "gray.400")}
+          gridArea={{ md: "2 / 1 / 3 / 2", "2xl": "auto" }}
           rounded="xl"
-          gridArea={{ md: "2 / 2 / 3 / 3", "2xl": "auto" }}
-        ></Card>
+          p="12px 12px 12px 12px"
+        >
+          <CardHeader mb="24px">
+            <Flex direction="column">
+              <Text fontSize="lg" fontWeight="bold" mb="4px">
+                Second Rate
+              </Text>
+              <Text fontSize="sm">From all projects</Text>
+            </Flex>
+          </CardHeader>
+        </Card>
       </Grid>
     </Flex>
   );

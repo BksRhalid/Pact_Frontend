@@ -8,22 +8,22 @@ import {
   Text,
   Tr,
   useColorModeValue,
+  Show,
 } from "@chakra-ui/react";
 import React from "react";
 
 function DashboardTableRow(props) {
-  const { logo, name, members, budget, progression, lastItem } = props;
+  const { name, budget, progression, lastItem } = props;
   const textColor = useColorModeValue("gray.700", "white");
   return (
     <Tr>
       <Td
-        minWidth={{ sm: "250px" }}
+        minWidth={{ base: "10vW", sm: "250px" }}
         ps="0px"
         borderBottomColor="#56577A"
         border={lastItem ? "none" : null}
       >
-        <Flex align="center" py=".8rem" minWidth="100%" flexWrap="nowrap">
-          <Icon as={logo} h={"24px"} w={"24px"} me="18px" />
+        <Flex align="center" py=".8rem" minWidth="auto" flexWrap="wrap">
           <Text
             fontSize="sm"
             color={textColor}
@@ -34,19 +34,13 @@ function DashboardTableRow(props) {
           </Text>
         </Flex>
       </Td>
-
-      <Td
-        borderBottomColor="#56577A"
-        color={textColor}
-        border={lastItem ? "none" : null}
-      >
-        <AvatarGroup size="xs"></AvatarGroup>
-      </Td>
-      <Td borderBottomColor="#56577A" border={lastItem ? "none" : null}>
-        <Text fontSize="sm" color={textColor} fontWeight="bold" pb=".5rem">
-          {budget}
-        </Text>
-      </Td>
+      <Show above="xs">
+        <Td borderBottomColor="#56577A" border={lastItem ? "none" : null}>
+          <Text fontSize="sm" color={textColor} fontWeight="bold" pb=".5rem">
+            {budget}
+          </Text>
+        </Td>
+      </Show>
       <Td borderBottomColor="#56577A" border={lastItem ? "none" : null}>
         <Flex direction="column">
           <Text
