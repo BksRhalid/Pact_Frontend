@@ -30,8 +30,9 @@ import {
         >
           <Image
             src="https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&auto=format&fit=crop&w=334&q=80"
-            objectFit="cover"
-            w="100%"
+            alt="Picture of the author"
+            width={500}
+            height={300}
           />
           {/* //CardBody */}
           <Box p={{ base: 3, sm: 5 }}>
