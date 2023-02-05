@@ -1,9 +1,9 @@
+import Image from 'next/image';
 import {
     chakra,
     Box,
     Stack,
     Text,
-    Image,
     Container,
     Button,
     useColorModeValue

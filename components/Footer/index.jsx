@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import {
     Box,
     chakra,
@@ -8,7 +9,6 @@ import {
     VisuallyHidden,
     Flex,
     VStack,
-    Image,
   } from '@chakra-ui/react';
   import { FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
   

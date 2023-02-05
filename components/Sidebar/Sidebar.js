@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import {
   IconButton,
   Avatar,
@@ -21,7 +22,6 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
-  Image,
   Button,
   useColorMode,
   Show,

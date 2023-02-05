@@ -1,10 +1,10 @@
 import * as React from 'react';
+import Image from 'next/image';
 import {
   Container,
   Box,
   Text,
   Flex,
-  Image,
   Spacer,
   Heading,
   Menu,

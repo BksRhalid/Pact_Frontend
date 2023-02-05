@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import Image from "next/image";
 
 import {
   IconButton,
@@ -23,7 +24,6 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
-  Image,
   Button,
   useColorMode,
   Show,
