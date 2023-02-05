@@ -25,24 +25,22 @@ function TimelineRow(props) {
   const bgIconColor = useColorModeValue("white.300", "gray.700");
 
   return (
-    <Flex alignItems='center' minH='78px' justifyContent='start' mb='5px'>
-      <Flex direction='column' h='100%' align='center'>
+    <Flex alignItems="center" minH="78px" justifyContent="start" mb="5px">
+      <Flex direction="column" h="100%" align="center">
         <Icon
           as={logo}
           bg={bgIconColor}
           color={color}
           h={"20px"}
           w={"20px"}
-          me='16px'
-          right={document.documentElement.dir === "rtl" ? "-8px" : ""}
-          left={document.documentElement.dir === "rtl" ? "" : "-8px"}
+          me="16px"
         />
       </Flex>
-      <Flex direction='column' justifyContent='flex-start' h='100%'>
-        <Text fontSize='sm' color='#fff' fontWeight='normal' mb='3px'>
+      <Flex direction="column" justifyContent="flex-start" h="100%">
+        <Text fontSize="sm" color="#fff" fontWeight="normal" mb="3px">
           {title}
         </Text>
-        <Text fontSize='sm' color='gray.400' fontWeight='normal'>
+        <Text fontSize="sm" color="gray.400" fontWeight="normal">
           {date}
         </Text>
       </Flex>

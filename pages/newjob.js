@@ -69,91 +69,73 @@ const newJob = () => {
   };
 
   return (
-    <>
-      <Head>
-        <title>
-          Trouver un job freelance sécurisé par la blockchain | Pact
-        </title>
-        <meta name="description" content="freelance job backed by blockchain" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Sidebar>
-        <Flex direction="column" alignItems="center" w="100%">
-          <Container minH="70vh">
-            <Stack spacing={4}>
-              <Stack align="center" spacing={2}>
-                <Heading
-                  fontSize={{ base: "xl", sm: "3xl" }}
-                  as="h1"
-                  noOfLines={1}
+    <Flex direction="column" alignItems="center" w="100%">
+      <Container minH="70vh">
+        <Stack spacing={4}>
+          <Stack align="center" spacing={2}>
+            <Heading fontSize={{ base: "xl", sm: "3xl" }} as="h1" noOfLines={1}>
+              Add a new gig
+            </Heading>
+            <Text fontSize={{ base: "sm", sm: "md" }}>description to do</Text>
+          </Stack>
+          <Flex mt="1rem" direction="column" width="100%">
+            <Box pos="relative">
+              <Box
+                pos="absolute"
+                top="-2px"
+                right="-2px"
+                bottom="-2px"
+                left="-2px"
+                rounded="lg"
+                bgGradient="linear(to-l, #7928CA,#FF0080)"
+                transform="rotate(0deg)"
+              ></Box>
+              <VStack
+                as="form"
+                pos="relative"
+                spacing={8}
+                p={6}
+                bg={useColorModeValue("white", "gray.700")}
+                rounded="lg"
+                boxShadow="lg"
+              >
+                <FormControl id="task">
+                  <FormLabel>Description</FormLabel>
+                  <Textarea
+                    type="textarea"
+                    rounded="md"
+                    placeholder="Describe here the job you want to propose to the community"
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                  <FormLabel>Price :</FormLabel>
+                  <Input
+                    type="number"
+                    rounded="md"
+                    placeholder="How much you will pay your worker in ETH"
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+                </FormControl>
+                <Button
+                  leftIcon={<MdAdd />}
+                  bgGradient="linear(to-l, #7928CA,#FF0080)"
+                  _hover={{
+                    bgGradient: "linear(to-r, green.400, green.800)",
+                  }}
+                  color="white"
+                  variant="solid"
+                  size="md"
+                  rounded="md"
+                  w="100%"
+                  onClick={() => addjob()}
                 >
-                  Add a new gig
-                </Heading>
-                <Text fontSize={{ base: "sm", sm: "md" }}>
-                  description to do
-                </Text>
-              </Stack>
-              <Flex mt="1rem" direction="column" width="100%">
-                <Box pos="relative">
-                  <Box
-                    pos="absolute"
-                    top="-2px"
-                    right="-2px"
-                    bottom="-2px"
-                    left="-2px"
-                    rounded="lg"
-                    bgGradient="linear(to-l, #7928CA,#FF0080)"
-                    transform="rotate(0deg)"
-                  ></Box>
-                  <VStack
-                    as="form"
-                    pos="relative"
-                    spacing={8}
-                    p={6}
-                    bg={useColorModeValue("white", "gray.700")}
-                    rounded="lg"
-                    boxShadow="lg"
-                  >
-                    <FormControl id="task">
-                      <FormLabel>Description</FormLabel>
-                      <Textarea
-                        type="textarea"
-                        rounded="md"
-                        placeholder="Describe here the job you want to propose to the community"
-                        onChange={(e) => setDescription(e.target.value)}
-                      />
-                      <FormLabel>Price :</FormLabel>
-                      <Input
-                        type="number"
-                        rounded="md"
-                        placeholder="How much you will pay your worker in ETH"
-                        onChange={(e) => setPrice(e.target.value)}
-                      />
-                    </FormControl>
-                    <Button
-                      leftIcon={<MdAdd />}
-                      bgGradient="linear(to-l, #7928CA,#FF0080)"
-                      _hover={{
-                        bgGradient: "linear(to-r, green.400, green.800)",
-                      }}
-                      color="white"
-                      variant="solid"
-                      size="md"
-                      rounded="md"
-                      w="100%"
-                      onClick={() => addjob()}
-                    >
-                      Add this job
-                    </Button>
-                  </VStack>
-                </Box>
-              </Flex>
-            </Stack>
-          </Container>
-        </Flex>
-      </Sidebar>
-    </>
+                  Add this job
+                </Button>
+              </VStack>
+            </Box>
+          </Flex>
+        </Stack>
+      </Container>
+    </Flex>
   );
 };
 

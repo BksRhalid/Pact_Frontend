@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import { ChakraProvider } from "@chakra-ui/react";
+import Layout from "./layout";
 import "@rainbow-me/rainbowkit/styles.css";
 import {
   getDefaultWallets,
@@ -45,7 +46,9 @@ export default function App({ Component, pageProps }) {
         chains={chains}
       >
         <ChakraProvider>
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>

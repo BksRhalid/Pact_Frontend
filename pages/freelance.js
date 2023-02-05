@@ -33,8 +33,18 @@ import medusa from "../public/img/pactLogo.png";
 // Custom components
 import Card from "@/components/Card/Card.js";
 import CardBody from "@/components/Card/CardBody.js";
+import CardHeader from "@/components/Card/CardHeader.js";
+import DashboardTableRow from "@/components/Tables/DashboardTableRow";
+import TimelineRow from "@/components/Tables/TimelineRow";
+import { AiFillCheckCircle } from "react-icons/ai";
+import { BiHappy } from "react-icons/bi";
+import { BsArrowRight } from "react-icons/bs";
+import {
+  IoCheckmarkDoneCircleSharp,
+  IoEllipsisHorizontal,
+} from "react-icons/io5";
 
-export default function Wallet() {
+export default function Freelance() {
   //WAGMI
   const { address, isConnected } = useAccount();
   const provider = useProvider();
@@ -74,7 +84,7 @@ export default function Wallet() {
                 lineHeight="1.6"
               >
                 <Text fontSize="sm" fontWeight="bold">
-                  Browse Wallet
+                  Browse Freelancers
                 </Text>
               </Flex>
             </Flex>
@@ -85,7 +95,7 @@ export default function Wallet() {
   );
 }
 
-// Wallet.getLayout = function getLayout(page) {
+// Freelance.getLayout = function getLayout(page) {
 //   return (
 //     <Layout>
 //       <NestedLayout>{page}</NestedLayout>

@@ -1,31 +1,40 @@
 import Head from "next/head";
 import React from "react";
-import {
-  Flex,
-  Container,
-  Box,
-  FormLabel,
-  FormControl,
-  Input,
-  Stack,
-  Button,
-  Heading,
-  VStack,
-  Text,
-  useColorModeValue,
-  useToast,
-  Textarea,
-} from "@chakra-ui/react";
-import Layout from "@/components/Layout";
+import { Flex, Box, Stack, Button, Text, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import { abi, contractAddress } from "@/constants";
 import { MdAdd } from "react-icons/md";
-import Sidebar from "../components/Sidebar/Sidebar";
+import Layout from "./layout";
+import {
+  useColorModeValue,
+  useColorMode,
+  CircularProgress,
+  CircularProgressLabel,
+  Grid,
+  Icon,
+  Progress,
+  SimpleGrid,
+  Spacer,
+  Stat,
+  StatHelpText,
+  StatLabel,
+  StatNumber,
+  Table,
+  Tbody,
+  Th,
+  Thead,
+  Tr,
+} from "@chakra-ui/react";
+// Styles for the circular progressbar
+import medusa from "../public/img/pactLogo.png";
+// Custom components
+import Card from "@/components/Card/Card.js";
+import CardBody from "@/components/Card/CardBody.js";
 
-const settings = () => {
+export default function Settings() {
   //WAGMI
   const { address, isConnected } = useAccount();
   const provider = useProvider();
@@ -38,66 +47,48 @@ const settings = () => {
   const [description, setDescription] = useState(null);
   const [price, setPrice] = useState(null);
 
-  //ROUTER FOR REDIRECTION WITH NEXTJS
-  const router = useRouter();
-
-  const addjob = async () => {
-    try {
-      const contract = new ethers.Contract(contractAddress, abi, signer);
-      let transaction = await contract.addJob(description, {
-        value: ethers.utils.parseEther(price),
-      });
-      await transaction.wait(1);
-      toast({
-        title: "Congratulations!",
-        description: "You have created a Job!",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "An error occured, please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      console.log(error);
-    }
-    router.push("/");
-  };
-
+  //FUNCTION TO ADD A TODO
   return (
-    <>
-      <Head>
-        <title>
-          Trouver un job freelance sécurisé par la blockchain | Pact
-        </title>
-        <meta name="description" content="freelance job backed by blockchain" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Sidebar>
-        <Flex direction="column" alignItems="center" w="100%">
-          <Container minH="70vh">
-            <Stack spacing={4}>
-              <Stack align="center" spacing={2}>
-                <Heading
-                  fontSize={{ base: "xl", sm: "3xl" }}
-                  as="h1"
-                  noOfLines={1}
-                >
-                  This is the page to manage your settings
-                </Heading>
-                <Text fontSize={{ base: "sm", sm: "md" }}>Things to do</Text>
-              </Stack>
-            </Stack>
-          </Container>
-        </Flex>
-      </Sidebar>
-    </>
+    <Flex flexDirection="column" pt={{ base: "5px", md: "5px" }}>
+      <Grid
+        templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
+        my="15px"
+        gap="24px"
+        color={useColorModeValue("gray.900", "gray.400")}
+      >
+        {/* Welcome Card */}
+        <Card
+          p="0px"
+          gridArea={{ md: "1 / 1 / 2 / 3", "2xl": "auto" }}
+          bg={useColorModeValue("white", "gray.400")}
+          bgPosition="50%"
+          rounded="xl"
+        >
+          <CardBody w="100%" h="100%">
+            <Flex flexDirection={{ sm: "column", lg: "row" }} w="100%" h="100%">
+              <Flex
+                flexDirection="column"
+                h="100%"
+                p="22px"
+                minW="60%"
+                lineHeight="1.6"
+              >
+                <Text fontSize="sm" fontWeight="bold">
+                  Browse Settings
+                </Text>
+              </Flex>
+            </Flex>
+          </CardBody>
+        </Card>
+      </Grid>
+    </Flex>
   );
-};
+}
 
-export default settings;
+// Settings.getLayout = function getLayout(page) {
+//   return (
+//     <Layout>
+//       <NestedLayout>{page}</NestedLayout>
+//     </Layout>
+//   );
+// };
