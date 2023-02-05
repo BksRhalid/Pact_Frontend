@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import logo from "../public/img/pactLogo.png";
+import logo from "@/public/img/pactLogo.png";
 import {
   IconButton,
   Avatar,
