@@ -47,11 +47,11 @@ import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
 import Footer from "@/components/Footer";
 
 const LinkItems = ([] = [
-  { name: "Dashboard", icon: FiHome },
-  { name: "Jobs", icon: FiList },
-  { name: "Freelance", icon: FiCompass },
-  { name: "Wallet", icon: FiStar },
-  { name: "Settings", icon: FiSettings },
+  { name: "Dashboard", icon: FiHome, src: "/" },
+  { name: "Jobs", icon: FiList, src: "/jobs" },
+  { name: "Freelance", icon: FiCompass, src: "/freelance" },
+  { name: "Wallet", icon: FiStar, src: "/wallet" },
+  { name: "Settings", icon: FiSettings, src: "/settings" },
 ]);
 
 export default function Layout({ children }) {
@@ -128,7 +128,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
           />
         </Flex>
         {LinkItems.map((link) => (
-          <NavItem key={link.name} icon={link.icon}>
+          <NavItem key={link.name} icon={link.icon} src={link.src}>
             {link.name}
           </NavItem>
         ))}
@@ -137,10 +137,10 @@ const SidebarContent = ({ onClose, ...rest }) => {
   );
 };
 
-const NavItem = ({ icon, children, ...rest }) => {
+const NavItem = ({ icon, src, children, ...rest }) => {
   return (
     <Link
-      href={`/${children.toLowerCase()}`}
+      href={src}
       style={{ textDecoration: "none" }}
       _focus={{ boxShadow: "none" }}
     >
