@@ -395,6 +395,7 @@ export default function Home() {
           p="12px 12px 12px 12px"
           bg={useColorModeValue("white", "gray.400")}
           rounded="xl"
+          h="100%"
         >
           <CardHeader mb="32px">
             <Flex direction="column">

@@ -140,20 +140,20 @@ export default function Home() {
                             <chakra.p
                               fontWeight="medium"
                               fontSize="sm"
-                              color={useColorModeValue("gray.600", "gray.300")}
+                              color={useColorModeValue("gray.600", "white")}
                             >
                               Published: {article.created_at}
                             </chakra.p>
                             <Badge
                               w="max-content"
-                              textColor={useColorModeValue("white", "gray.500")}
+                              textColor={useColorModeValue("gray.100", "white")}
                               opacity="0.8"
                               bg={
                                 article.status == "in progress"
                                   ? "yellow.500"
                                   : article.status == "completed"
                                   ? "green.500"
-                                  : "gray.500"
+                                  : "gray.400"
                               }
                             >
                               {article.status}
@@ -239,8 +239,8 @@ export default function Home() {
                                 <Badge
                                   w="max-content"
                                   textColor={useColorModeValue(
-                                    "white",
-                                    "gray.500"
+                                    "gray.100",
+                                    "white"
                                   )}
                                   opacity="0.8"
                                   bg={
@@ -248,7 +248,7 @@ export default function Home() {
                                       ? "yellow.500"
                                       : article.status == "completed"
                                       ? "green.500"
-                                      : "gray.500"
+                                      : "gray.400"
                                   }
                                 >
                                   {article.status}
@@ -341,8 +341,8 @@ export default function Home() {
                                 <Badge
                                   w="max-content"
                                   textColor={useColorModeValue(
-                                    "white",
-                                    "gray.500"
+                                    "gray.100",
+                                    "white"
                                   )}
                                   opacity="0.8"
                                   bg={
@@ -474,14 +474,14 @@ export default function Home() {
                             </chakra.p>
                             <Badge
                               w="max-content"
-                              textColor={useColorModeValue("white", "gray.500")}
+                              textColor={useColorModeValue("gray.100", "white")}
                               opacity="0.8"
                               bg={
                                 article.status == "in progress"
                                   ? "yellow.500"
                                   : article.status == "completed"
                                   ? "green.500"
-                                  : "gray.500"
+                                  : "gray.400"
                               }
                             >
                               {article.status}
@@ -567,8 +567,8 @@ export default function Home() {
                                 <Badge
                                   w="max-content"
                                   textColor={useColorModeValue(
-                                    "white",
-                                    "gray.500"
+                                    "gray.100",
+                                    "white"
                                   )}
                                   opacity="0.8"
                                   bg={
@@ -669,8 +669,8 @@ export default function Home() {
                                 <Badge
                                   w="max-content"
                                   textColor={useColorModeValue(
-                                    "white",
-                                    "gray.500"
+                                    "gray.100",
+                                    "white"
                                   )}
                                   opacity="0.8"
                                   bg={

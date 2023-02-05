@@ -203,9 +203,9 @@ const MobileNav = ({ onOpen, ...rest }) => {
         <Link href="/newjob">
           <Button
             size={"sm"}
-            color={"#552DF1"}
+            textColor={useColorModeValue("#552DF1", "white")}
             variant="outline"
-            border={"2px solid #552DF1"}
+            border={useColorModeValue("2px solid #552DF1", "2px solid #fff")}
             mr={{ base: "2", md: "4" }}
             rightIcon={<AddIcon />}
             _hover={{

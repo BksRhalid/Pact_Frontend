@@ -9,11 +9,17 @@ import {
     Stack,
     Text,
     useColorModeValue,
+    useColorMode,
     VisuallyHidden,
     Flex,
     VStack,
+    Button,
+    HStack,
+    Spacer,
   } from '@chakra-ui/react';
   import { FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
+  import { FaMoon, FaSun } from "react-icons/fa";
+
   
   const Logo = () => {
     return (
@@ -35,10 +41,7 @@ import {
     );
   };
   
-  const SocialButton = () => {
-    const href = 'https://twitter.com/chakra_ui';
-    const label = 'Twitter';
-    const children = <FaTwitter />;
+  const SocialButton = ({label, href, children}) => {
     return (
             <chakra.button
                 bg={useColorModeValue('blackAlpha.100', 'whiteAlpha.100')}
@@ -62,13 +65,15 @@ import {
   };
   
   export default function Footer() {
+    const { toggleColorMode, colorMode } = useColorMode();
+
     return (
-        <Box
+      <Box
         bg={useColorModeValue('gray.50', 'gray.900')}
         color={useColorModeValue('gray.700', 'gray.200')}>
         <Container
           as={Stack}
-          minW={'50vw'}
+          minW={'70vw'}
           py={4}
           direction={{ base: 'column', md: 'row' }}
           spacing={4}
@@ -87,8 +92,16 @@ import {
             <SocialButton label={'Instagram'} href={'#'}>
               <FaInstagram />
             </SocialButton>
+            <Spacer mx="50px"></Spacer>
+            <Button onClick={() => toggleColorMode()}>
+            {colorMode == "dark" ? <FaSun /> : <FaMoon />}
+           </Button>{" "}
+
           </Stack>
-        </Container>
+          </Container>
+      
       </Box>
+
+
     );
   }
