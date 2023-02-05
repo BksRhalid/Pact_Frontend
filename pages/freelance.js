@@ -1,104 +1,151 @@
 import Head from "next/head";
-import React from "react";
-import { Flex, Box, Stack, Button, Text, useToast } from "@chakra-ui/react";
-import { useState } from "react";
-import { useAccount, useProvider, useSigner } from "wagmi";
-import { useRouter } from "next/router";
-import { ethers } from "ethers";
-import { abi, contractAddress } from "@/constants";
-import { MdAdd } from "react-icons/md";
-import Layout from "./layout";
-import {
-  useColorModeValue,
-  useColorMode,
-  CircularProgress,
-  CircularProgressLabel,
-  Grid,
-  Icon,
-  Progress,
-  SimpleGrid,
-  Spacer,
-  Stat,
-  StatHelpText,
-  StatLabel,
-  StatNumber,
-  Table,
-  Tbody,
-  Th,
-  Thead,
-  Tr,
-} from "@chakra-ui/react";
-// Styles for the circular progressbar
-import medusa from "../public/img/pactLogo.png";
-// Custom components
-import Card from "@/components/Card/Card.js";
-import CardBody from "@/components/Card/CardBody.js";
-import CardHeader from "@/components/Card/CardHeader.js";
-import DashboardTableRow from "@/components/Tables/DashboardTableRow";
-import TimelineRow from "@/components/Tables/TimelineRow";
-import { AiFillCheckCircle } from "react-icons/ai";
-import { BiHappy } from "react-icons/bi";
-import { BsArrowRight } from "react-icons/bs";
-import {
-  IoCheckmarkDoneCircleSharp,
-  IoEllipsisHorizontal,
-} from "react-icons/io5";
+import Image from "next/image";
+import { Fragment } from "react";
+// Here we have used react-icons package for the icons
+import { IconType } from "react-icons";
+import { FaRegComment, FaRegHeart, FaRegEye } from "react-icons/fa";
 
-export default function Freelance() {
-  //WAGMI
+import {
+  Flex,
+  Text,
+  Button,
+  useToast,
+  Spinner,
+  Grid,
+  useColorModeValue,
+  chakra,
+  Link,
+  VStack,
+  Icon,
+  SimpleGrid,
+} from "@chakra-ui/react";
+
+import { abi, contractAddress } from "@/constants";
+import { useAccount, useBalance, useProvider, useSigner } from "wagmi";
+import { ethers } from "ethers";
+
+import Layout from "@/components/Layout";
+import Gigs from "@/components/Gigs/Gigs";
+import Card from "@/components/CardJob";
+
+export default function Home() {
   const { address, isConnected } = useAccount();
   const provider = useProvider();
   const { data: signer } = useSigner();
+  const freelances = [
+    {
+      name: "worker 1",
+      description: "description worker 1",
+      address: "0x320020000000000000000299020982098092",
+      status: "completed",
+      created_at: "31 Sept 2022",
+      meta: {
+        jobs: 15,
+        stars: 4,
+        dispute: 0,
+      },
+    },
+    {
+      name: "worker 2",
+      description: "description worker 2",
+      address: "0x000000000000000000000227782787",
+      status: "in progress",
+      created_at: "31 Sept 2022",
+      meta: {
+        jobs: 11,
+        stars: 2,
+        dispute: 10,
+      },
+    },
+    {
+      name: "worker 3",
+      description: "description worker 3",
+      address: "0x0000000000000000029839089028902809",
+      status: "not started",
+      created_at: "31 Sept 2022",
+      meta: {
+        jobs: 1,
+        stars: 5,
+        dispute: 1,
+      },
+    },
+  ];
 
-  //CHAKRA-UI
   const toast = useToast();
 
-  //STATES
-  const [description, setDescription] = useState(null);
-  const [price, setPrice] = useState(null);
-
-  //FUNCTION TO ADD A TODO
   return (
-    <Flex flexDirection="column" pt={{ base: "5px", md: "5px" }}>
-      <Grid
-        templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
-        my="15px"
-        gap="24px"
-        color={useColorModeValue("gray.900", "gray.400")}
-      >
-        {/* Welcome Card */}
-        <Card
-          p="0px"
-          gridArea={{ md: "1 / 1 / 2 / 3", "2xl": "auto" }}
-          bg={useColorModeValue("white", "gray.400")}
-          bgPosition="50%"
-          rounded="xl"
+    <Flex direction="column">
+      <Flex flexDirection="column" pt={{ base: "5px", md: "15px" }}>
+        <VStack
+          as="form"
+          spacing={8}
+          w="100%"
+          bg={useColorModeValue("white", "gray.700")}
+          rounded="lg"
+          boxShadow="lg"
+          p={{ base: 5, sm: 10 }}
         >
-          <CardBody w="100%" h="100%">
-            <Flex flexDirection={{ sm: "column", lg: "row" }} w="100%" h="100%">
+          <Flex justify="left" mb={3}>
+            <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
+              Freelance Board
+            </chakra.h3>
+          </Flex>
+          <SimpleGrid
+            width="100%"
+            minChildWidth="300px"
+            spacingX="20px"
+            spacingY="20px"
+          >
+            {freelances.length !== 0 ? (
+              freelances.map((freelance) => {
+                return (
+                  <Card key={freelance.address} freelance={freelance} /> //key={crypto.randomUUID()}
+                );
+              })
+            ) : (
               <Flex
-                flexDirection="column"
-                h="100%"
-                p="22px"
-                minW="60%"
-                lineHeight="1.6"
+                height="100%"
+                width="100%"
+                alignItems="center"
+                justifyContent="center"
               >
-                <Text fontSize="sm" fontWeight="bold">
-                  Browse Freelancers
-                </Text>
+                <Alert status="warning" width="300px">
+                  <AlertIcon />
+                  <Flex direction="column">
+                    <Text as="span">There are no freelance on our DApp.</Text>{" "}
+                    <br />
+                    <Link href="/newjob" style={{ fontWeight: "bold" }}>
+                      <Text>Create the first job!</Text>
+                    </Link>
+                  </Flex>
+                </Alert>
               </Flex>
-            </Flex>
-          </CardBody>
-        </Card>
-      </Grid>
+            )}
+          </SimpleGrid>
+        </VStack>
+      </Flex>
     </Flex>
   );
 }
 
-// Freelance.getLayout = function getLayout(page) {
-//   return (
-//     <Layout>
-//       <NestedLayout>{page}</NestedLayout>
-//     </Layout>
-//   );
-// };
+const FreelanceStat = ({ icon, value }) => {
+  return (
+    <Flex p={1} alignItems="center">
+      <Icon as={icon} w={5} h={5} mr={2} />
+      <chakra.span> {value} </chakra.span>
+    </Flex>
+  );
+};
+
+const FreelanceSettingLink = ({ label }) => {
+  return (
+    <chakra.p
+      as={Link}
+      _hover={{ bg: useColorModeValue("gray.400", "gray.600") }}
+      p={1}
+      rounded="md"
+    >
+      {label}
+    </chakra.p>
+  );
+};

@@ -44,6 +44,7 @@ import { FaGoogle, FaMoon, FaSun } from "react-icons/fa";
 import { IconType } from "react-icons";
 import { ReactText } from "react";
 import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
+import Footer from "@/components/Footer";
 
 const LinkItems = ([] = [
   { name: "Dashboard", icon: FiHome },
@@ -92,6 +93,7 @@ export default function Layout({ children }) {
           </Box>
         </Box>
       </section>
+      <Footer />
     </>
   );
 }

@@ -18,6 +18,7 @@ import {
   Grid,
   Spacer,
   Icon,
+  Select,
 } from "@chakra-ui/react";
 import { CloseIcon, AddIcon } from "@chakra-ui/icons";
 
@@ -91,10 +92,10 @@ const newJob = () => {
         <VStack spacing={4} w="100%">
           <Stack w="100%" spacing={3} direction={{ base: "column", md: "row" }}>
             <FormControl id="name">
-              <FormLabel>Job's Name</FormLabel>
+              <FormLabel>Job title</FormLabel>
               <Input
                 type="text"
-                placeholder="Ahmad"
+                placeholder="Title"
                 rounded="md"
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -105,17 +106,29 @@ const newJob = () => {
             </FormControl>
           </Stack>
           <FormControl id="subject">
-            <FormLabel>Subject</FormLabel>
-            <Input
-              type="text"
-              placeholder="Are you available for freelance work?"
-              rounded="md"
-              onChange={(e) => setPrice(e.target.value)}
-            />
+            <FormLabel>Skills required</FormLabel>
+            <Select onChange={(e) => setPrice(e.target.value)}>
+              <option>Web Development</option>
+              <option>Mobile Development</option>
+              <option>Graphic Design</option>
+              <option>UI/UX Design</option>
+              <option>Marketing</option>
+              <option>Writing</option>
+              <option>Translation</option>
+              <option>Video & Animation</option>
+              <option>Music & Audio</option>
+              <option>Programming & Tech</option>
+              <option>Data</option>
+              <option>Business</option>
+            </Select>
           </FormControl>
           <FormControl id="message">
-            <FormLabel>Message</FormLabel>
-            <Textarea size="lg" placeholder="Enter your message" rounded="md" />
+            <FormLabel>Description</FormLabel>
+            <Textarea
+              size="lg"
+              placeholder="Enter the description of the job "
+              rounded="md"
+            />
           </FormControl>
         </VStack>
         <VStack w="100%">

@@ -1,227 +1,399 @@
 import Head from "next/head";
-import React from "react";
+import Image from "next/image";
+import { Fragment } from "react";
+// Here we have used react-icons package for the icons
+import { IconType } from "react-icons";
+import { FaRegComment, FaRegHeart, FaRegEye } from "react-icons/fa";
+import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
+
 import {
   Flex,
-  Box,
-  Stack,
-  Button,
   Text,
+  Button,
   useToast,
-  Show,
-} from "@chakra-ui/react";
-import { useState } from "react";
-import { useAccount, useProvider, useSigner, useBalance } from "wagmi";
-import { useRouter } from "next/router";
-import { ethers } from "ethers";
-import { abi, contractAddress } from "@/constants";
-import { MdAdd } from "react-icons/md";
-import Layout from "./layout";
-import {
+  Spinner,
+  Grid,
   useColorModeValue,
   useColorMode,
-  CircularProgress,
-  CircularProgressLabel,
-  Grid,
+  Box,
+  chakra,
+  Link,
+  VStack,
+  HStack,
   Icon,
-  Progress,
-  SimpleGrid,
+  Divider,
+  Stack,
+  Badge,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
   Spacer,
-  Stat,
-  StatHelpText,
-  StatLabel,
-  StatNumber,
-  Table,
-  Tbody,
-  Th,
-  Thead,
-  Tr,
+  Card,
+  CardBody,
+  CardHeader,
 } from "@chakra-ui/react";
-// Styles for the circular progressbar
-import medusa from "../public/img/pactLogo.png";
-// Custom components
-import Card from "@/components/Card/Card.js";
-import CardBody from "@/components/Card/CardBody.js";
-import CardHeader from "@/components/Card/CardHeader.js";
-import IconBox from "@/components/Icons/IconBox";
-// Icons
-import {
-  CartIcon,
-  DocumentIcon,
-  GlobeIcon,
-  RocketIcon,
-  StatsIcon,
-  WalletIcon,
-} from "@/components/Icons/Icons.js";
-import DashboardTableRow from "@/components/Tables/DashboardTableRow";
-import TimelineRow from "@/components/Tables/TimelineRow";
-import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
-import { BiHappy } from "react-icons/bi";
-import { BsArrowRight } from "react-icons/bs";
-import {
-  IoCheckmarkDoneCircleSharp,
-  IoEllipsisHorizontal,
-} from "react-icons/io5";
 
-export default function Dashboard() {
-  //WAGMI
+import { abi, contractAddress } from "@/constants";
+import { useAccount, useBalance, useProvider, useSigner } from "wagmi";
+import { ethers } from "ethers";
+
+import Layout from "@/components/Layout";
+import Gigs from "@/components/Gigs/Gigs";
+
+export default function Home() {
   const { address, isConnected } = useAccount();
   const provider = useProvider();
   const { data: signer } = useSigner();
+  const articles = [
+    {
+      title: "job 1",
+      link: "job id 1",
+      status: "in progress",
+      created_at: "31 Sept 2022",
+      meta: {
+        reactions: 5,
+        comments: 2,
+        views: 10,
+      },
+    },
+    {
+      title: "job 2",
+      link: "job id 2",
+      status: "completed",
+      created_at: "31 Sept 2022",
+      meta: {
+        reactions: 5,
+        comments: 2,
+        views: 10,
+      },
+    },
+    {
+      title: "job 3",
+      link: "job id 3",
+      status: "not started",
+      created_at: "31 Sept 2022",
+      meta: {
+        reactions: 5,
+        comments: 2,
+        views: 10,
+      },
+    },
+  ];
 
-  //CHAKRA-UI
   const toast = useToast();
 
-  //STATES
-  const [description, setDescription] = useState(null);
-  const [price, setPrice] = useState(null);
-
-  //FUNCTION TO ADD A TODO
   return (
-    <Flex flexDirection="column" pt={{ base: "5px", md: "5px" }}>
-      <Grid
-        templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
-        my="10px"
-        gap="24px"
-        color={useColorModeValue("gray.900", "gray.400")}
+    <Flex direction={{ base: "column", md: "row" }}>
+      {/* Job Board Overview */}
+      <VStack
+        as="form"
+        spacing={8}
+        w="70%"
+        bg={useColorModeValue("white", "gray.700")}
+        rounded="lg"
+        boxShadow="lg"
+        p={{ base: 5, sm: 10 }}
+        m={{ base: 2, sm: 5 }}
       >
-        {/* Welcome Card */}
-        <Card
-          p="0px"
-          gridArea={{ md: "1 / 1 / 2 / 3", "2xl": "auto" }}
-          bg={useColorModeValue("white", "gray.400")}
-          bgPosition="50%"
-          rounded="xl"
+        <Flex justify="left" mb={3}>
+          <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
+            Job Board
+          </chakra.h3>
+        </Flex>
+        <VStack
+          border="1px solid"
+          borderColor="gray.400"
+          rounded="md"
+          overflow="hidden"
+          spacing={0}
         >
-          <CardBody w="100%" h="100%">
-            <Flex flexDirection={{ sm: "column", lg: "row" }} w="100%" h="100%">
-              <Flex
-                flexDirection="column"
-                h="100%"
-                p="22px"
-                minW="60%"
-                lineHeight="1.6"
-              >
-                <Text fontSize="sm" fontWeight="bold">
-                  Welcome back,
-                </Text>
-                <Text fontSize="28px" fontWeight="bold" mb="18px">
-                  Mark Johnson
-                </Text>
-                <Text fontSize="md" fontWeight="normal" mb="auto">
-                  Glad to see you again! <br />
-                  Ask me anything.
-                </Text>
-                <Spacer />
-                <Flex align="center">
-                  <Button
-                    p="0px"
-                    variant="no-hover"
-                    bg="transparent"
-                    my={{ sm: "1.5rem", lg: "0px" }}
-                  >
-                    <Text
-                      fontSize="sm"
-                      fontWeight="bold"
-                      cursor="pointer"
-                      transition="all .3s ease"
-                      my={{ sm: "1.5rem", lg: "0px" }}
-                      _hover={{ me: "4px" }}
+          <Tabs colorScheme="purple">
+            <TabList>
+              <Tab>All Jobs</Tab>
+              <Tab>In progress</Tab>
+              <Tab>Completed</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                {articles.map((article, index) => (
+                  <Fragment key={index}>
+                    <Grid
+                      templateRows={{ base: "auto auto", md: "auto" }}
+                      w="100%"
+                      templateColumns={{ base: "unset", md: "4fr 2fr 2fr" }}
+                      p={{ base: 2, sm: 4 }}
+                      gap={3}
+                      alignItems="center"
+                      _hover={{
+                        bg: useColorModeValue("gray.200", "gray.700"),
+                      }}
                     >
-                      Tab to record
-                    </Text>
-                    <Icon
-                      as={BsArrowRight}
-                      w="20px"
-                      h="20px"
-                      fontSize="2xl"
-                      transition="all .3s ease"
-                      mx=".3rem"
-                      cursor="pointer"
-                      pt="4px"
-                      _hover={{ transform: "translateX(20%)" }}
-                    />
-                  </Button>
-                </Flex>
-              </Flex>
-            </Flex>
-          </CardBody>
-        </Card>
-      </Grid>
-      <Grid
-        templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
-        my="12px"
-        gap="24px"
-        color={useColorModeValue("gray.900", "gray.400")}
+                      <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
+                        <chakra.h3
+                          as={Link}
+                          href={article.link}
+                          isExternal
+                          fontWeight="bold"
+                          fontSize="lg"
+                        >
+                          {article.title}
+                        </chakra.h3>
+                        <chakra.p
+                          fontWeight="medium"
+                          fontSize="sm"
+                          color={useColorModeValue("gray.600", "gray.300")}
+                        >
+                          Published: {article.created_at}
+                        </chakra.p>
+                        <Badge
+                          w="max-content"
+                          textColor={useColorModeValue("white", "gray.500")}
+                          opacity="0.8"
+                          bg={
+                            article.status == "in progress"
+                              ? "yellow.500"
+                              : article.status == "completed"
+                              ? "green.500"
+                              : "gray.500"
+                          }
+                        >
+                          {article.status}
+                        </Badge>
+                      </Box>
+                      <HStack
+                        spacing={{ base: 0, sm: 3 }}
+                        alignItems="center"
+                        fontWeight="medium"
+                        fontSize={{ base: "xs", sm: "sm" }}
+                        color={useColorModeValue("gray.600", "gray.300")}
+                      >
+                        <ArticleStat
+                          icon={FaRegComment}
+                          value={article.meta.comments}
+                        />
+                        <ArticleStat
+                          icon={FaRegHeart}
+                          value={article.meta.reactions}
+                        />
+                        <ArticleStat
+                          icon={FaRegEye}
+                          value={article.meta.views}
+                        />
+                      </HStack>
+                      <Stack
+                        spacing={2}
+                        direction="row"
+                        fontSize={{ base: "sm", sm: "md" }}
+                        justifySelf="flex-end"
+                        alignItems="center"
+                      >
+                        {["Manage", "Edit"].map((label, index) => (
+                          <ArticleSettingLink key={index} label={label} />
+                        ))}
+                      </Stack>
+                    </Grid>
+                    {articles.length - 1 !== index && <Divider m={0} />}
+                  </Fragment>
+                ))}
+              </TabPanel>
+              <TabPanel>
+                {articles.map(
+                  (article, index) =>
+                    article.status == "in progress" && (
+                      <Fragment key={index}>
+                        <Grid
+                          templateRows={{ base: "auto auto", md: "auto" }}
+                          w="100%"
+                          templateColumns={{
+                            base: "unset",
+                            md: "4fr 2fr 2fr",
+                          }}
+                          p={{ base: 2, sm: 4 }}
+                          gap={3}
+                          alignItems="center"
+                          _hover={{
+                            bg: useColorModeValue("gray.200", "gray.700"),
+                          }}
+                        >
+                          <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
+                            <chakra.h3
+                              as={Link}
+                              href={article.link}
+                              isExternal
+                              fontWeight="bold"
+                              fontSize="lg"
+                            >
+                              {article.title}
+                            </chakra.h3>
+                            <chakra.p
+                              fontWeight="medium"
+                              fontSize="sm"
+                              color={useColorModeValue("gray.600", "gray.300")}
+                            >
+                              Published: {article.created_at}
+                            </chakra.p>
+                            <Badge
+                              w="max-content"
+                              textColor={useColorModeValue("white", "gray.500")}
+                              opacity="0.8"
+                              bg={
+                                article.status == "in progress"
+                                  ? "yellow.500"
+                                  : article.status == "completed"
+                                  ? "green.500"
+                                  : "gray.500"
+                              }
+                            >
+                              {article.status}
+                            </Badge>
+                          </Box>
+                          <HStack
+                            spacing={{ base: 0, sm: 3 }}
+                            alignItems="center"
+                            fontWeight="medium"
+                            fontSize={{ base: "xs", sm: "sm" }}
+                            color={useColorModeValue("gray.600", "gray.300")}
+                          >
+                            <ArticleStat
+                              icon={FaRegComment}
+                              value={article.meta.comments}
+                            />
+                            <ArticleStat
+                              icon={FaRegHeart}
+                              value={article.meta.reactions}
+                            />
+                            <ArticleStat
+                              icon={FaRegEye}
+                              value={article.meta.views}
+                            />
+                          </HStack>
+                          <Stack
+                            spacing={2}
+                            direction="row"
+                            fontSize={{ base: "sm", sm: "md" }}
+                            justifySelf="flex-end"
+                            alignItems="center"
+                          >
+                            {["Manage", "Edit"].map((label, index) => (
+                              <ArticleSettingLink key={index} label={label} />
+                            ))}
+                          </Stack>
+                        </Grid>
+                        {articles.length - 1 !== index && <Divider m={0} />}
+                      </Fragment>
+                    )
+                )}
+              </TabPanel>
+              <TabPanel>
+                {articles.map(
+                  (article, index) =>
+                    article.status == "completed" && (
+                      <Fragment key={index}>
+                        <Grid
+                          templateRows={{ base: "auto auto", md: "auto" }}
+                          w="100%"
+                          templateColumns={{
+                            base: "unset",
+                            md: "4fr 2fr 2fr",
+                          }}
+                          p={{ base: 2, sm: 4 }}
+                          gap={3}
+                          alignItems="center"
+                          _hover={{
+                            bg: useColorModeValue("gray.200", "gray.700"),
+                          }}
+                        >
+                          <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
+                            <chakra.h3
+                              as={Link}
+                              href={article.link}
+                              isExternal
+                              fontWeight="bold"
+                              fontSize="lg"
+                            >
+                              {article.title}
+                            </chakra.h3>
+                            <chakra.p
+                              fontWeight="medium"
+                              fontSize="sm"
+                              color={useColorModeValue("gray.600", "gray.300")}
+                            >
+                              Published: {article.created_at}
+                            </chakra.p>
+                            <Badge
+                              w="max-content"
+                              textColor={useColorModeValue("white", "gray.500")}
+                              opacity="0.8"
+                              bg={
+                                article.status == "in progress"
+                                  ? "yellow.500"
+                                  : article.status == "completed"
+                                  ? "green.500"
+                                  : "gray.500"
+                              }
+                            >
+                              {article.status}
+                            </Badge>
+                          </Box>
+                          <HStack
+                            spacing={{ base: 0, sm: 3 }}
+                            alignItems="center"
+                            fontWeight="medium"
+                            fontSize={{ base: "xs", sm: "sm" }}
+                            color={useColorModeValue("gray.600", "gray.300")}
+                          >
+                            <ArticleStat
+                              icon={FaRegComment}
+                              value={article.meta.comments}
+                            />
+                            <ArticleStat
+                              icon={FaRegHeart}
+                              value={article.meta.reactions}
+                            />
+                            <ArticleStat
+                              icon={FaRegEye}
+                              value={article.meta.views}
+                            />
+                          </HStack>
+                          <Stack
+                            spacing={2}
+                            direction="row"
+                            fontSize={{ base: "sm", sm: "md" }}
+                            justifySelf="flex-end"
+                            alignItems="center"
+                          >
+                            {["Manage", "Edit"].map((label, index) => (
+                              <ArticleSettingLink key={index} label={label} />
+                            ))}
+                          </Stack>
+                        </Grid>
+                        {articles.length - 1 !== index && <Divider m={0} />}
+                      </Fragment>
+                    )
+                )}
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </VStack>
+      </VStack>
+      {/* Wallet Overview */}
+      <VStack
+        as="form"
+        spacing={8}
+        w="30%"
+        bg={useColorModeValue("white", "gray.700")}
+        rounded="lg"
+        boxShadow="lg"
+        p={{ base: 5, sm: 10 }}
+        m={{ base: 2, sm: 5 }}
       >
-        {/* Projects */}
-        <Card
-          bg={useColorModeValue("white", "gray.400")}
-          rounded="xl"
-          p="16px"
-          overflowX={{ sm: "scroll", xl: "hidden" }}
-        >
-          <CardHeader p="12px 0px 28px 0px">
-            <Flex direction="column">
-              <Text fontSize="lg" color="gray.900" fontWeight="bold" pb="8px">
-                Vos Jobs
-              </Text>
-              <Flex align="center">
-                <Icon
-                  as={IoCheckmarkDoneCircleSharp}
-                  color="teal.300"
-                  w={4}
-                  h={4}
-                  pe="3px"
-                />
-                <Text fontSize="sm" color="gray.400" fontWeight="normal">
-                  <Text fontWeight="bold" as="span">
-                    30 done
-                  </Text>{" "}
-                  this month.
-                </Text>
-              </Flex>
-            </Flex>
-          </CardHeader>
-          <Table variant="simple" color="gray.900">
-            <Thead>
-              <Tr my=".8rem" ps="0px">
-                <Th
-                  ps="0px"
-                  color="gray.400"
-                  fontFamily="Plus Jakarta Display"
-                  borderBottomColor="#56577A"
-                >
-                  Jobs
-                </Th>
-                <Show above="xs">
-                  <Th
-                    color="gray.400"
-                    fontFamily="Plus Jakarta Display"
-                    borderBottomColor="#56577A"
-                  >
-                    Budget
-                  </Th>
-                </Show>
-                <Th
-                  color="gray.400"
-                  fontFamily="Plus Jakarta Display"
-                  borderBottomColor="#56577A"
-                >
-                  Completion
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <DashboardTableRow
-                name={"row.name"}
-                budget={"row.budget"}
-                progression={"row.progression"}
-                lastItem={null}
-              />
-            </Tbody>
-          </Table>
-        </Card>
-        {/* Wallet Overview */}
+        <Flex justify="left" mb={3}>
+          <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
+            Wallet Overview
+          </chakra.h3>
+        </Flex>
         <Card
           p="12px 12px 12px 12px"
           bg={useColorModeValue("white", "gray.400")}
@@ -229,9 +401,6 @@ export default function Dashboard() {
         >
           <CardHeader mb="32px">
             <Flex direction="column">
-              <Text fontSize="lg" color="gray.900" fontWeight="bold" mb="6px">
-                Wallet Overview
-              </Text>
               <Flex align="center">
                 {isConnected ? (
                   <>
@@ -288,54 +457,29 @@ export default function Dashboard() {
             )}
           </CardBody>
         </Card>
-      </Grid>
-      <Grid
-        templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
-        my="10px"
-        gap="24px"
-        color={useColorModeValue("gray.900", "gray.400")}
-      >
-        {/* Satisfaction Rate */}
-        <Card
-          bg={useColorModeValue("white", "gray.400")}
-          gridArea={{ md: "2 / 1 / 3 / 2", "2xl": "auto" }}
-          rounded="xl"
-          p="12px 12px 12px 12px"
-        >
-          <CardHeader mb="24px">
-            <Flex direction="column">
-              <Text fontSize="lg" fontWeight="bold" mb="4px">
-                Satisfaction Rate
-              </Text>
-              <Text fontSize="sm">From all projects</Text>
-            </Flex>
-          </CardHeader>
-        </Card>
-        {/* Card title */}
-        <Card
-          bg={useColorModeValue("white", "gray.400")}
-          gridArea={{ md: "2 / 1 / 3 / 2", "2xl": "auto" }}
-          rounded="xl"
-          p="12px 12px 12px 12px"
-        >
-          <CardHeader mb="24px">
-            <Flex direction="column">
-              <Text fontSize="lg" fontWeight="bold" mb="4px">
-                Second Rate
-              </Text>
-              <Text fontSize="sm">From all projects</Text>
-            </Flex>
-          </CardHeader>
-        </Card>
-      </Grid>
+      </VStack>
     </Flex>
   );
 }
 
-// Dashboard.getLayout = function getLayout(page) {
-//   return (
-//     <Layout>
-//       <NestedLayout>{page}</NestedLayout>
-//     </Layout>
-//   );
-// };
+const ArticleStat = ({ icon, value }) => {
+  return (
+    <Flex p={1} alignItems="center">
+      <Icon as={icon} w={5} h={5} mr={2} />
+      <chakra.span> {value} </chakra.span>
+    </Flex>
+  );
+};
+
+const ArticleSettingLink = ({ label }) => {
+  return (
+    <chakra.p
+      as={Link}
+      _hover={{ bg: useColorModeValue("gray.400", "gray.600") }}
+      p={1}
+      rounded="md"
+    >
+      {label}
+    </chakra.p>
+  );
+};

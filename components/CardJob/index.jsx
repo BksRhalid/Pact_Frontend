@@ -13,7 +13,7 @@ import {
 
 
 
-  const Gig = ({event,takeJob,payJob}) => {
+  const Gig = ({freelance}) => {
     const { address, isConnected } = useAccount()
 
     return (
@@ -40,10 +40,10 @@ import {
                 lineHeight="shorter"
                 mb={2}
               >
-                <Text as="span" fontWeight="bold">Author : </Text>{event.author.substring(0, 5)}...{event.author.substring(event.author.length - 4)}
+                <Text as="span" fontWeight="bold">Author : </Text>{freelance.address.substring(0, 5)}...{freelance.address.substring(freelance.address.length - 4)}
               </Text>
               <Text noOfLines={2}>
-              <Text as="span" fontWeight="bold">Description : </Text> {event.description}
+              <Text as="span" fontWeight="bold">Description : </Text> {freelance.description}
               </Text>
             </Box>
             <Stack
@@ -51,15 +51,15 @@ import {
               direction={{ base: 'column', sm: 'row' }}
               spacing={{ base: 2, sm: 0 }}
             >
-            {event.isFinished ? (
-                    <Text color="green" >Job is done by : <Text color="green" fontWeight="bold">{event.worker.substring(0, 5)}...{event.worker.substring(event.worker.length - 4)}</Text></Text>
+            {freelance.status = "completed" ? (
+                    <Text color="green" >Job is done by : <Text color="green" fontWeight="bold">{freelance.address.substring(0, 5)}...{freelance.address.substring(freelance.address.length - 4)}</Text></Text>
                 ) :
                   (
                     /* If the job is not finished, is the job already taken? */
-                    event.isTaken ? (
+                    freelance.status = "in progress" ? (
                     /* If the job is taken, a button to pay the worker is displayed.
                     that you are the author of the job to display this button */
-                    address === event.author ? (
+                    address === freelance.address ? (
                         <Button    
                         leftIcon={<AiOutlineArrowRight />}
                         bgGradient="linear(to-l, red,orange)"
@@ -68,7 +68,7 @@ import {
                         variant="solid"
                         size="sm"
                         rounded="md"
-                        onClick={() => payJob(event.id)}>Pay</Button>
+                        onClick={() => null}>Pay</Button>
                     ) : (
                       /* Otherwise, it is displayed that the job is taken */
                       <Text color="orange">Job taken by : <Text fontWeight="bold" color="orange" >{event.worker.substring(0, 5)}...{event.worker.substring(event.worker.length - 4)}</Text></Text>
@@ -76,7 +76,7 @@ import {
                   ) : (
                   /* if the job is not taken, a button is displayed to take the job, but it is necessary to check
                   that the connected address is not the one of the author of the job */
-                      address !== event.author ? (
+                       freelance.address !== 0 ? (
                         <Button                  
                         leftIcon={<AiOutlineArrowRight />}
                         bgGradient="linear(to-l, #7928CA,#FF0080)"
@@ -85,7 +85,7 @@ import {
                         variant="solid"
                         size="sm"
                         rounded="md"
-                        onClick={() => takeJob(event.id)}>
+                        onClick={() => null}>
                         Take the job
                       </Button>
                   ) :(<Text as="span" fontWeight="bold" color="grey">Waiting for workers</Text>)
