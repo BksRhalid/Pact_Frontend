@@ -18,8 +18,6 @@ import {
   DrawerContent,
   Text,
   useDisclosure,
-  BoxProps,
-  FlexProps,
   Menu,
   MenuButton,
   MenuDivider,
@@ -28,7 +26,7 @@ import {
   Button,
   useColorMode,
   Show,
-  Divider,
+  Spacer,
 } from "@chakra-ui/react";
 import {
   FiHome,
@@ -46,6 +44,7 @@ import { IconType } from "react-icons";
 import { ReactText } from "react";
 import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
 import Footer from "@/components/Footer";
+import Auth from "@/components/Auth/Auth";
 
 const LinkItems = ([] = [
   { name: "Dashboard", icon: FiHome, src: "/" },
@@ -89,7 +88,8 @@ export default function Layout({ children }) {
           </Drawer>
           {/* mobilenav */}
           <MobileNav onOpen={onOpen} />
-          <Box ml={{ base: 0, md: 60 }} p="4">
+          <Box ml={{ base: 0, md: 60 }}>
+            <Spacer h={20} />
             {children}
           </Box>
         </Box>
@@ -176,12 +176,17 @@ const MobileNav = ({ onOpen, ...rest }) => {
     <Flex
       ml={{ base: 0, md: 60 }}
       px={{ base: 4, md: 4 }}
+      mb="4"
       height="20"
       alignItems="center"
       bg={useColorModeValue("white", "gray.900")}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue("gray.200", "gray.700")}
       justifyContent={{ base: "space-between", md: "flex-end" }}
+      position="fixed"
+      zIndex={100}
+      right="0"
+      left="0"
       {...rest}
     >
       <IconButton
@@ -199,27 +204,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
       >
         <Image src="/img/pactLogo.png" alt="logo" width="30" height="30" />
       </Text> */}
-      <Show above="md">
-        <Link href="/newjob">
-          <Button
-            size={"sm"}
-            textColor={useColorModeValue("#552DF1", "white")}
-            variant="outline"
-            border={useColorModeValue("2px solid #552DF1", "2px solid #fff")}
-            mr={{ base: "2", md: "4" }}
-            rightIcon={<AddIcon />}
-            _hover={{
-              variant: "outline",
-              color: "white",
-              bg: "#552DF1",
-            }}
-          >
-            Créer un Job
-          </Button>
-        </Link>
-      </Show>
-
-      <HStack spacing={{ base: "0", md: "6" }}>
+      {/* <HStack spacing={{ base: "0", md: "6" }}>
         <Show below="md">
           <Link href="/newjob">
             <Button
@@ -228,7 +213,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
               variant="solid"
               border={"2px solid #552DF1"}
               mr={{ base: "2", md: "4" }}
-              rightIcon={<AddIcon />}
+              px={10}
               _hover={{
                 variant: "outline",
                 color: "white",
@@ -287,6 +272,9 @@ const MobileNav = ({ onOpen, ...rest }) => {
             </MenuList>
           </Menu>
         </Flex>
+      </HStack> */}
+      <HStack spacing={{ base: "0", md: "6" }}>
+        <Auth />
       </HStack>
     </Flex>
   );

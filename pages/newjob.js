@@ -79,7 +79,7 @@ const newJob = () => {
   };
 
   return (
-    <Flex>
+    <Flex px={{ base: "5px", md: "10px" }} pt={{ base: "5px", md: "5px" }}>
       <VStack
         as="form"
         spacing={8}

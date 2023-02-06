@@ -37,7 +37,7 @@ export default function App({ Component, pageProps }) {
         showRecentTransactions={true}
         modalSize="compact"
         theme={lightTheme({
-          accentColor: "#198754",
+          accentColor: "#552DF1",
           accentColorForeground: "white",
           borderRadius: "medium",
           fontStack: "system",

@@ -68,40 +68,38 @@ import {
     const { toggleColorMode, colorMode } = useColorMode();
 
     return (
-      <Box
-        bg={useColorModeValue('gray.50', 'gray.900')}
-        color={useColorModeValue('gray.700', 'gray.200')}>
-        <Container
-          as={Stack}
-          minW={'70vw'}
-          py={4}
-          direction={{ base: 'column', md: 'row' }}
-          spacing={4}
-          justify={{ base: 'center', md: 'space-around' }}
-          alignItems={{ base: 'center', md: 'flex-end'}}
-            >
-          <Logo />
-          <Text>&copy; {1900 + new Date().getYear()}{" "} Pact. All rights reserved</Text>
+      <Flex
+      grow={1}
+      ml={{ base: 0, md: 60 }}
+      px={{ base: 4, md: 4 }}
+      py={4}
+      alignItems="center"
+      borderBottomWidth="1px"
+      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      justifyContent={{ base: "space-between"}}
+      direction={{ base: 'column', md: 'row' }}
+      justify={{ base: 'center', md: 'space-around' }}
+      right="0"
+      left="0"
+      bg={useColorModeValue('gray.50', 'gray.900')}
+        color={useColorModeValue('gray.700', 'gray.200')}
+    >
+          <Logo py={2} />
+          <Text py={2}>&copy; {1900 + new Date().getYear()}{" "} Pact. All rights reserved</Text>
           <Stack direction={'row'} spacing={6} alignItems="flex-end">
-            <SocialButton label={'Twitter'} href={'#'}>
+            <SocialButton label={'Twitter'} href={'#'} py={2}>
               <FaTwitter />
             </SocialButton>
-            <SocialButton label={'YouTube'} href={'#'}>
+            <SocialButton label={'YouTube'} href={'#'} py={2}>
               <FaYoutube />
             </SocialButton>
-            <SocialButton label={'Instagram'} href={'#'}>
+            <SocialButton label={'Instagram'} href={'#'} py={2}>
               <FaInstagram />
             </SocialButton>
-            <Spacer mx="50px"></Spacer>
-            <Button onClick={() => toggleColorMode()}>
-            {colorMode == "dark" ? <FaSun /> : <FaMoon />}
-           </Button>{" "}
-
           </Stack>
-          </Container>
-      
-      </Box>
-
-
+          {/* <Button onClick={() => toggleColorMode()}>
+            {colorMode == "dark" ? <FaSun /> : <FaMoon />}
+           </Button>{" "} */}
+      </Flex>
     );
   }

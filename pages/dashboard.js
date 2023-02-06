@@ -76,7 +76,11 @@ export default function Dashboard() {
 
   //FUNCTION TO ADD A TODO
   return (
-    <Flex flexDirection="column" pt={{ base: "5px", md: "5px" }}>
+    <Flex
+      flexDirection="column"
+      px={{ base: "5px", md: "10px" }}
+      pt={{ base: "5px", md: "5px" }}
+    >
       <Grid
         templateColumns={{ sm: "1fr", md: "1fr 1fr", "2xl": "2fr 1.2fr 1.5fr" }}
         my="10px"

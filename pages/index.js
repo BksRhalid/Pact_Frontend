@@ -5,6 +5,7 @@ import { Fragment } from "react";
 import { IconType } from "react-icons";
 import { FaRegComment, FaRegHeart, FaRegEye } from "react-icons/fa";
 import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
+import TimelineRow from "@/components/Tables/TimelineRow";
 
 import {
   Flex,
@@ -82,17 +83,20 @@ export default function Home() {
   const toast = useToast();
 
   return (
-    <Flex direction={{ base: "column", md: "row" }}>
+    <Flex
+      direction={{ base: "column", md: "row" }}
+      align={{ base: "center", md: "flex-start" }}
+    >
       {/* Job Board Overview */}
       <VStack
         as="form"
-        spacing={8}
+        spacing={4}
         w={{ base: "100%", md: "70%" }}
         bg={useColorModeValue("white", "gray.700")}
         rounded="lg"
         boxShadow="lg"
-        p={{ base: 5, sm: 10 }}
-        m={{ base: 2, sm: 5 }}
+        p={{ base: 5 }}
+        m={{ base: 5 }}
       >
         <Flex justify="left" mb={3}>
           <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
@@ -383,8 +387,8 @@ export default function Home() {
         bg={useColorModeValue("white", "gray.700")}
         rounded="lg"
         boxShadow="lg"
-        p={{ base: 5, sm: 10 }}
-        m={{ base: 2, sm: 5 }}
+        p={{ base: 5 }}
+        m={{ base: 5 }}
       >
         <Flex justify="left" mb={3}>
           <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
