@@ -74,9 +74,11 @@ export default function Home() {
   const toast = useToast();
 
   return (
-    <Flex direction="column" 
-    px={{ base: "5px", md: "10px" }}
-    pt={{ base: "5px", md: "5px" }}
+    <Flex
+      direction="column"
+      px={{ base: "5px", md: "10px" }}
+      pt={{ base: "5px", md: "5px" }}
+    >
       <Flex flexDirection="column" pt={{ base: "5px", md: "15px" }}>
         <VStack
           as="form"
