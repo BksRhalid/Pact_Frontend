@@ -57,7 +57,11 @@ export default function Settings() {
                 minW="60%"
                 lineHeight="1.6"
               >
-                <Text fontSize="sm" fontWeight="bold">
+                <Text
+                  fontSize="sm"
+                  fontWeight="bold"
+                  color={useColorModeValue("gray.700", "white")}
+                >
                   Browse Settings
                 </Text>
               </Flex>
