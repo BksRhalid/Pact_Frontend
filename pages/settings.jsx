@@ -6,7 +6,6 @@ import {
   Text,
   Button,
   Stack,
-  ChakraProvider
 } from "@chakra-ui/react";
 import {
   Pagination,
@@ -19,21 +18,19 @@ import {
   PaginationSeparator
 } from "@ajna/pagination";
 
-const fetchPokemons = async (
-  pageSize: number,
-  offset: number
-): Promise<any> => {
+const fetchPokemons = async ({pageSize,offset}) => {
   return await fetch(
     `https://pokeapi.co/api/v2/pokemon?limit=${pageSize}&offset=${offset}`
   ).then(async (res) => await res.json());
+  console.log("fetchPokemons ->", pageSize, offset);
 };
 
-const Home: FC = () => {
+const Home = () => {
   // states
-  const [pokemonsTotal, setPokemonsTotal] = useState<number | undefined>(
+  const [pokemonsTotal, setPokemonsTotal] = useState(
     undefined
   );
-  const [pokemons, setPokemons] = useState<any[]>([]);
+  const [pokemons, setPokemons] = useState([]);
 
   // constants
   const outerLimit = 2;
@@ -69,29 +66,28 @@ const Home: FC = () => {
         setPokemons(pokemons.results);
       })
       .catch((error) => console.log("App =>", error));
+      console.log("useEffect ->", pokemonsTotal, pokemons);
   }, [currentPage, pageSize, offset]);
 
   // handlers
-  const handlePageChange = (nextPage: number): void => {
+  const handlePageChange = (nextPage) => {
     // -> request new data using the page number
     setCurrentPage(nextPage);
     console.log("request new data with ->", nextPage);
   };
 
   const handlePageSizeChange = (
-    event: ChangeEvent<HTMLSelectElement>
-  ): void => {
+    event) => {
     const pageSize = Number(event.target.value);
 
     setPageSize(pageSize);
   };
 
-  const handleDisableClick = (): void => {
+  const handleDisableClick = () => {
     setIsDisabled((oldState) => !oldState);
   };
 
   return (
-    <ChakraProvider>
       <Stack>
         <Pagination
           pagesCount={pagesCount}
@@ -135,7 +131,7 @@ const Home: FC = () => {
                 />
               }
             >
-              {pages.map((page: number) => (
+              {pages.map((page) => (
                 <PaginationPage
                   w={7}
                   bg="red.300"
@@ -203,7 +199,6 @@ const Home: FC = () => {
           ))}
         </Grid>
       </Stack>
-    </ChakraProvider>
   );
 };
 
