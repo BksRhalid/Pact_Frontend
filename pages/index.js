@@ -1,21 +1,21 @@
 import Head from "next/head";
 import Image from "next/image";
-import { Fragment } from "react";
+import React from "react";
+import { useState, useEffect, Fragment } from "react";
+
 // Here we have used react-icons package for the icons
 import { IconType } from "react-icons";
 import { FaRegComment, FaRegHeart, FaRegEye } from "react-icons/fa";
 import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 import TimelineRow from "@/components/Tables/TimelineRow";
+import { RiArrowRightSLine } from "react-icons/ri";
 
 import {
   Flex,
   Text,
-  Button,
   useToast,
-  Spinner,
   Grid,
   useColorModeValue,
-  useColorMode,
   Box,
   chakra,
   Link,
@@ -30,10 +30,10 @@ import {
   TabPanels,
   Tab,
   TabPanel,
-  Spacer,
   Card,
   CardBody,
   CardHeader,
+  Button,
 } from "@chakra-ui/react";
 
 import { abi, contractAddress } from "@/constants";
@@ -43,7 +43,10 @@ import { ethers } from "ethers";
 export default function Home() {
   const { address, isConnected } = useAccount();
   const provider = useProvider();
-  const { data: signer } = useSigner();
+  const [isClient, setIsClient] = useState(false);
+  const [isWorker, setIsWorker] = useState(false);
+  const [isJury, setIsJury] = useState(false);
+
   const articles = [
     {
       title: "job 1",
@@ -80,7 +83,38 @@ export default function Home() {
     },
   ];
 
-  const toast = useToast();
+  //CHAKRA-UI
+  const toast = useToast({
+    duration: 5000,
+    isClosable: true,
+    position: "top",
+    title: "Container style is updated",
+    containerStyle: {
+      width: "500px",
+      maxWidth: "80%",
+    },
+  });
+
+  useEffect(() => {
+    if (isConnected) {
+      getDatas();
+      console.log("isClient in use", isClient);
+      console.log("isWorker in use", isWorker);
+    }
+  });
+
+  const getDatas = async () => {
+    if (isConnected) {
+      const contract = new ethers.Contract(contractAddress, abi, provider);
+      const _isClient = await contract.connect(address).isClient();
+      const _isWorker = await contract.connect(address).isWorker();
+      console.log("isClient in getDatas", isClient);
+      console.log("isWorker in getDatas", isWorker);
+      setIsClient(_isClient);
+      setIsWorker(_isWorker);
+    }
+    console.log("isClient in getDatas last", isClient);
+  };
 
   return (
     <Flex
@@ -379,7 +413,7 @@ export default function Home() {
           </Tabs>
         </VStack>
       </VStack>
-      {/* Wallet Overview */}
+      {/* Profil settings */}
       <VStack
         as="form"
         spacing={8}
@@ -389,76 +423,94 @@ export default function Home() {
         boxShadow="lg"
         p={{ base: 5 }}
         m={{ base: 5 }}
+        align="left"
       >
         <Flex justify="left" mb={3}>
           <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
-            Wallet Overview
+            Profil settings
           </chakra.h3>
         </Flex>
-        <Card
-          p="12px 12px 12px 12px"
-          bg={useColorModeValue("white", "gray.400")}
-          rounded="xl"
-          h="100%"
-        >
-          <CardHeader mb="32px">
-            <Flex direction="column">
-              <Flex align="center">
-                {isConnected ? (
-                  <>
-                    <Icon
-                      as={AiFillCheckCircle}
-                      color="green.500"
-                      w="15px"
-                      h="15px"
-                      me="5px"
-                    />
-                    <Text fontSize="sm" color="gray.400" fontWeight="normal">
-                      <Text fontWeight="bold" as="span" color="gray.400">
-                        +30%
-                      </Text>{" "}
-                      this useBalance
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <Icon
-                      as={AiFillCloseCircle}
-                      color="red.500"
-                      w="15px"
-                      h="15px"
-                      me="5px"
-                    />
-                    <Text fontSize="sm" fontWeight="bold">
-                      {" "}
-                      Not connected
-                    </Text>
-                  </>
-                )}
-              </Flex>
-            </Flex>
-          </CardHeader>
-          <CardBody>
+        <Flex direction="column">
+          <Flex align="center">
             {isConnected ? (
-              <Flex direction="column" lineHeight="21px">
-                <TimelineRow
-                  logo={"row.logo"}
-                  title={"row.title"}
-                  date={"row.date"}
-                  color={"row.color"}
-                  index={"index"}
-                  arrLength={1}
-                />
+              <Flex direction="column">
+                <Flex direction="row" align="center">
+                  <Icon
+                    as={isClient ? AiFillCheckCircle : AiFillCloseCircle}
+                    color={isClient ? "green.500" : "red.500"}
+                    w="15px"
+                    h="15px"
+                    me="5px"
+                  />
+                  <Text fontSize="sm" color="gray.400" fontWeight="normal">
+                    <Text fontWeight="bold" as="span" color="gray.400">
+                      {isClient ? "Client" : "Not register as client"}
+                    </Text>
+                  </Text>
+                </Flex>
+                <Flex direction="row" align="center">
+                  <Icon
+                    as={isWorker ? AiFillCheckCircle : AiFillCloseCircle}
+                    color={isWorker ? "green.500" : "red.500"}
+                    w="15px"
+                    h="15px"
+                    me="5px"
+                  />
+                  <Text fontSize="sm" color="gray.400" fontWeight="normal">
+                    <Text fontWeight="bold" as="span" color="gray.400">
+                      {isWorker ? "Worker" : "Not register as worker"}
+                    </Text>
+                  </Text>
+                </Flex>
+                <Flex direction="row" align="center">
+                  <Icon
+                    as={isJury ? AiFillCheckCircle : AiFillCloseCircle}
+                    color={isJury ? "green.500" : "red.500"}
+                    w="15px"
+                    h="15px"
+                    me="5px"
+                  />
+                  <Text fontSize="sm" color="gray.400" fontWeight="normal">
+                    <Text fontWeight="bold" as="span" color="gray.400">
+                      {isJury ? "Jury" : "Not register as jury"}
+                    </Text>
+                  </Text>
+                </Flex>
+                <Flex
+                  direction="row"
+                  align="center"
+                  justify={"flex-end"}
+                  justifySelf="center"
+                >
+                  <Link href="/settings">
+                    <Button
+                      rightIcon={<RiArrowRightSLine />}
+                      variant={"outline"}
+                      colorScheme="blue"
+                      mt={5}
+                    >
+                      Update your profil
+                    </Button>
+                  </Link>
+                </Flex>
               </Flex>
             ) : (
-              <Flex align={"center"}>
-                <Text as="b" fontSize="xs">
-                  Merci de vous connecter à votre wallet
+              <Flex direction="row" align="center">
+                <Icon
+                  as={AiFillCloseCircle}
+                  color="red.500"
+                  w="15px"
+                  h="15px"
+                  me="5px"
+                />
+                <Text fontSize="sm" fontWeight="bold">
+                  {" "}
+                  Not connected
                 </Text>
               </Flex>
             )}
-          </CardBody>
-        </Card>
+          </Flex>
+        </Flex>
       </VStack>
     </Flex>
   );

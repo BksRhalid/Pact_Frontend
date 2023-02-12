@@ -1,19 +1,13 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Fragment } from "react";
+import React from "react";
+import { useState, useEffect, Fragment } from "react";
 // Here we have used react-icons package for the icons
-import { IconType } from "react-icons";
 import { FaRegComment, FaRegHeart, FaRegEye } from "react-icons/fa";
 
 import {
   Flex,
   Text,
-  Button,
-  useToast,
-  Spinner,
   Grid,
   useColorModeValue,
-  useColorMode,
   Box,
   chakra,
   Link,
@@ -28,24 +22,136 @@ import {
   TabPanels,
   Tab,
   TabPanel,
-  Spacer,
+  useToast,
 } from "@chakra-ui/react";
 
 import { abi, contractAddress } from "@/constants";
-import { useAccount, useBalance, useProvider, useSigner } from "wagmi";
+import { useAccount, useProvider, useSigner } from "wagmi";
 import { ethers } from "ethers";
 
-import Layout from "@/components/Layout";
-import Gigs from "@/components/Gigs/Gigs";
+
 
 export default function Home() {
-  const { address, isConnected } = useAccount();
-  const provider = useProvider();
-  const { data: signer } = useSigner();
-  const articles = [
+    //WAGMI
+    const { address, isConnected } = useAccount();
+    const provider = useProvider();
+    const { data: signer } = useSigner();
+
+
+
+    //ROUTER FOR REDIRECTION WITH NEXTJS
+    // const router = useRouter();
+
+  
+    //CHAKRA-UI
+    const toast = useToast({
+      duration: 5000,
+      isClosable: true,
+      position: "top",
+      title: "Container style is updated",
+      containerStyle: {
+        width: "500px",
+        maxWidth: "80%",
+      },
+    });    
+    const textColorPrimary = useColorModeValue("gray.700", "white");
+
+    
+    //STATE
+    const [isClient, setIsClient] = useState(false);
+    const [isWorker, setIsWorker] = useState(false);
+    const [contracts, setContracts] = useState([])
+    const [contractState, setContractState] = useState("")
+
+
+  // hooks
+
+  // functions
+  useEffect(() => {
+    if (isConnected) {
+      getDatas();
+      getJobs();
+    }
+  }, [isConnected, address]);
+
+  const getDatas = async () => {
+      const contract = new ethers.Contract(contractAddress, abi, provider);
+      const isClient = await contract.connect(address).isClient()
+      const isWorker = await contract.connect(address).isWorker();
+      setIsClient(isClient);
+      setIsWorker(isWorker);
+
+  };
+
+  const getJobs = async() => { 
+    
+    const contract = new ethers.Contract(contractAddress, abi, provider)
+    let NumberContracts = await contract.connect(address).contractCounter()
+    NumberContracts = NumberContracts.toString();
+
+    let contractsTab = []
+    for (let i = 1; i < NumberContracts; i++) {
+      let details = await contract.connect(address).contracts(i)
+      let price = details.price.toString() / 1000000000000000000
+      let state = getContractStates(details.state)
+      let thisContract = {
+        client : details.client,
+        worker : details.worker,
+        id: i,
+        hash: details.hashJob,
+        price : price,
+        state: state,
+        // created_at: details.created_at,
+        deadline: details.deadline.toString(),
+      }
+      contractsTab.push(thisContract)
+  }
+  setContracts(contractsTab)
+  console.log("tab", contractsTab)
+
+}
+
+const getContractStates = (expr) => {
+  switch (expr) {
+    case 0:
+      return "WaitingWorkerSign"
+        break
+    case 1:
+      return "WorkStarted"
+        break
+    case 2:
+      return "WorkFinishedSuccessufully"
+      break
+    case 3:
+      return "DisputeOpened"
+        break  
+    case 4:
+      return "ClientLostInCourt"
+        break
+    case 5:
+      return "WorkerLostInCourt"
+      break     
+      case 6:
+        return "DisputeClosed"  
+      break 
+      case 7:
+        return "CancelByFreelancer"
+      break 
+      case 8:
+        return "CancelByClient" 
+      break  
+      case 8:
+        return "Archived"  
+      break    
+      default:
+      return null
+  }
+}
+
+  const jobs = [
     {
-      title: "job 1",
-      link: "job id 1",
+      title: "job 1", //title
+      link: "job id 1", //link
       status: "in progress",
       created_at: "31 Sept 2022",
       meta: {
@@ -78,7 +184,6 @@ export default function Home() {
     },
   ];
 
-  const toast = useToast();
 
   return (
     <Flex
@@ -101,7 +206,7 @@ export default function Home() {
               Job Board
             </chakra.h3>
           </Flex>
-          {!isConnected ? (
+          {isConnected ? (
             <VStack
               border="1px solid"
               borderColor="gray.400"
@@ -115,10 +220,9 @@ export default function Home() {
                   <Tab>In progress</Tab>
                   <Tab>Completed</Tab>
                 </TabList>
-
                 <TabPanels>
                   <TabPanel>
-                    {articles.map((article, index) => (
+                    {contracts.map((thisjob, index) => (
                       <Fragment key={index}>
                         <Grid
                           templateRows={{ base: "auto auto", md: "auto" }}
@@ -134,33 +238,33 @@ export default function Home() {
                           <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
                             <chakra.h3
                               as={Link}
-                              href={article.link}
+                              href={`/{thisjob.id}`}
                               isExternal
                               fontWeight="bold"
                               fontSize="lg"
                             >
-                              {article.title}
+                              {thisjob.title}
                             </chakra.h3>
                             <chakra.p
                               fontWeight="medium"
                               fontSize="sm"
                               color={useColorModeValue("gray.600", "white")}
                             >
-                              Published: {article.created_at}
+                              Published: {thisjob.created_at}
                             </chakra.p>
                             <Badge
                               w="max-content"
                               textColor={useColorModeValue("gray.100", "white")}
                               opacity="0.8"
                               bg={
-                                article.status == "in progress"
+                                thisjob.status == "in progress"
                                   ? "yellow.500"
-                                  : article.status == "completed"
+                                  : thisjob.status == "completed"
                                   ? "green.500"
                                   : "gray.400"
                               }
                             >
-                              {article.status}
+                              {thisjob.state}
                             </Badge>
                           </Box>
                           <HStack
@@ -170,18 +274,18 @@ export default function Home() {
                             fontSize={{ base: "xs", sm: "sm" }}
                             color={useColorModeValue("gray.600", "gray.300")}
                           >
-                            <ArticleStat
+                            {/* <JobStat
                               icon={FaRegComment}
-                              value={article.meta.comments}
+                              value={thisjob.meta.comments}
                             />
-                            <ArticleStat
+                            <JobStat
                               icon={FaRegHeart}
-                              value={article.meta.reactions}
+                              value={thisjob.meta.reactions}
                             />
-                            <ArticleStat
+                            <JobStat
                               icon={FaRegEye}
-                              value={article.meta.views}
-                            />
+                              value={thisjob.meta.views}
+                            /> */}
                           </HStack>
                           <Stack
                             spacing={2}
@@ -191,18 +295,18 @@ export default function Home() {
                             alignItems="center"
                           >
                             {["Manage", "Edit"].map((label, index) => (
-                              <ArticleSettingLink key={index} label={label} />
+                              <JobSettingLink key={index} label={label} />
                             ))}
                           </Stack>
                         </Grid>
-                        {articles.length - 1 !== index && <Divider m={0} />}
+                        {contracts.length - 1 !== index && <Divider m={0} />}
                       </Fragment>
                     ))}
                   </TabPanel>
                   <TabPanel>
-                    {articles.map(
-                      (article, index) =>
-                        article.status == "in progress" && (
+                    {contracts.map(
+                      (thisjob, index) =>
+                        thisjob.status == "in progress" && (
                           <Fragment key={index}>
                             <Grid
                               templateRows={{ base: "auto auto", md: "auto" }}
@@ -223,12 +327,12 @@ export default function Home() {
                               >
                                 <chakra.h3
                                   as={Link}
-                                  href={article.link}
+                                  href={thisjob.link}
                                   isExternal
                                   fontWeight="bold"
                                   fontSize="lg"
                                 >
-                                  {article.title}
+                                  {thisjob.hash}
                                 </chakra.h3>
                                 <chakra.p
                                   fontWeight="medium"
@@ -238,7 +342,7 @@ export default function Home() {
                                     "gray.300"
                                   )}
                                 >
-                                  Published: {article.created_at}
+                                  price: {thisjob.price}
                                 </chakra.p>
                                 <Badge
                                   w="max-content"
@@ -248,14 +352,14 @@ export default function Home() {
                                   )}
                                   opacity="0.8"
                                   bg={
-                                    article.status == "in progress"
+                                    thisjob.state == "in progress"
                                       ? "yellow.500"
-                                      : article.status == "completed"
+                                      : thisjob.status == "completed"
                                       ? "green.500"
                                       : "gray.400"
                                   }
                                 >
-                                  {article.status}
+                                  {thisjob.state}
                                 </Badge>
                               </Box>
                               <HStack
@@ -268,18 +372,18 @@ export default function Home() {
                                   "gray.300"
                                 )}
                               >
-                                <ArticleStat
+                                {/* <JobStat
                                   icon={FaRegComment}
-                                  value={article.meta.comments}
+                                  value={thisjob.meta.comments}
                                 />
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegHeart}
-                                  value={article.meta.reactions}
+                                  value={thisjob.meta.reactions}
                                 />
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegEye}
-                                  value={article.meta.views}
-                                />
+                                  value={thisjob.meta.views}
+                                /> */}
                               </HStack>
                               <Stack
                                 spacing={2}
@@ -289,22 +393,22 @@ export default function Home() {
                                 alignItems="center"
                               >
                                 {["Manage", "Edit"].map((label, index) => (
-                                  <ArticleSettingLink
+                                  <JobSettingLink
                                     key={index}
                                     label={label}
                                   />
                                 ))}
                               </Stack>
                             </Grid>
-                            {articles.length - 1 !== index && <Divider m={0} />}
+                            {contractsTab.length - 1 !== index && <Divider m={0} />}
                           </Fragment>
                         )
                     )}
                   </TabPanel>
                   <TabPanel>
-                    {articles.map(
-                      (article, index) =>
-                        article.status == "completed" && (
+                    {contracts.map(
+                      (thisjob, index) =>
+                        thisjob.status == "completed" && (
                           <Fragment key={index}>
                             <Grid
                               templateRows={{ base: "auto auto", md: "auto" }}
@@ -325,12 +429,12 @@ export default function Home() {
                               >
                                 <chakra.h3
                                   as={Link}
-                                  href={article.link}
+                                  href={thisjob.link}
                                   isExternal
                                   fontWeight="bold"
                                   fontSize="lg"
                                 >
-                                  {article.title}
+                                  {thisjob.title}
                                 </chakra.h3>
                                 <chakra.p
                                   fontWeight="medium"
@@ -340,7 +444,7 @@ export default function Home() {
                                     "gray.300"
                                   )}
                                 >
-                                  Published: {article.created_at}
+                                  Published: {thisjob.created_at}
                                 </chakra.p>
                                 <Badge
                                   w="max-content"
@@ -350,14 +454,14 @@ export default function Home() {
                                   )}
                                   opacity="0.8"
                                   bg={
-                                    article.status == "in progress"
+                                    thisjob.status == "in progress"
                                       ? "yellow.500"
-                                      : article.status == "completed"
+                                      : thisjob.status == "completed"
                                       ? "green.500"
                                       : "gray.500"
                                   }
                                 >
-                                  {article.status}
+                                  {thisjob.status}
                                 </Badge>
                               </Box>
                               <HStack
@@ -370,18 +474,18 @@ export default function Home() {
                                   "gray.300"
                                 )}
                               >
-                                <ArticleStat
+                                {/* <JobStat
                                   icon={FaRegComment}
-                                  value={article.meta.comments}
+                                  value={thisjob.meta.comments}
                                 />
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegHeart}
-                                  value={article.meta.reactions}
+                                  value={thisjob.meta.reactions}
                                 />
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegEye}
-                                  value={article.meta.views}
-                                />
+                                  value={thisjob.meta.views}
+                                /> */}
                               </HStack>
                               <Stack
                                 spacing={2}
@@ -391,19 +495,21 @@ export default function Home() {
                                 alignItems="center"
                               >
                                 {["Manage", "Edit"].map((label, index) => (
-                                  <ArticleSettingLink
+                                  <JobSettingLink
                                     key={index}
                                     label={label}
                                   />
                                 ))}
                               </Stack>
                             </Grid>
-                            {articles.length - 1 !== index && <Divider m={0} />}
+                            {contractsTab.length - 1 !== index && <Divider m={0} />}
                           </Fragment>
                         )
                     )}
                   </TabPanel>
-                </TabPanels>
+               
+                  </TabPanels>
+                
               </Tabs>
             </VStack>
           ) : (
@@ -414,7 +520,8 @@ export default function Home() {
         </VStack>
       </Flex>
       <Divider />
-      <Flex flexDirection="column" pt={{ base: "5px", md: "15px" }}>
+      {/* DRAFT BOARD END */}
+      {/* <Flex flexDirection="column" pt={{ base: "5px", md: "15px" }}>
         <VStack
           as="form"
           spacing={8}
@@ -446,7 +553,7 @@ export default function Home() {
 
                 <TabPanels>
                   <TabPanel>
-                    {articles.map((article, index) => (
+                    {jobs.map((thisjob, index) => (
                       <Fragment key={index}>
                         <Grid
                           templateRows={{ base: "auto auto", md: "auto" }}
@@ -462,33 +569,33 @@ export default function Home() {
                           <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
                             <chakra.h3
                               as={Link}
-                              href={article.link}
+                              href={thisjob.link}
                               isExternal
                               fontWeight="bold"
                               fontSize="lg"
                             >
-                              {article.title}
+                              {thisjob.title}
                             </chakra.h3>
                             <chakra.p
                               fontWeight="medium"
                               fontSize="sm"
                               color={useColorModeValue("gray.600", "gray.300")}
                             >
-                              Published: {article.created_at}
+                              Published: {thisjob.created_at}
                             </chakra.p>
                             <Badge
                               w="max-content"
                               textColor={useColorModeValue("gray.100", "white")}
                               opacity="0.8"
                               bg={
-                                article.status == "in progress"
+                                thisjob.status == "in progress"
                                   ? "yellow.500"
-                                  : article.status == "completed"
+                                  : thisjob.status == "completed"
                                   ? "green.500"
                                   : "gray.400"
                               }
                             >
-                              {article.status}
+                              {thisjob.status}
                             </Badge>
                           </Box>
                           <HStack
@@ -498,17 +605,17 @@ export default function Home() {
                             fontSize={{ base: "xs", sm: "sm" }}
                             color={useColorModeValue("gray.600", "gray.300")}
                           >
-                            <ArticleStat
+                            <JobStat
                               icon={FaRegComment}
-                              value={article.meta.comments}
+                              value={thisjob.meta.comments}
                             />
-                            <ArticleStat
+                            <JobStat
                               icon={FaRegHeart}
-                              value={article.meta.reactions}
+                              value={thisjob.meta.reactions}
                             />
-                            <ArticleStat
+                            <JobStat
                               icon={FaRegEye}
-                              value={article.meta.views}
+                              value={thisjob.meta.views}
                             />
                           </HStack>
                           <Stack
@@ -519,18 +626,18 @@ export default function Home() {
                             alignItems="center"
                           >
                             {["Manage", "Edit"].map((label, index) => (
-                              <ArticleSettingLink key={index} label={label} />
+                              <JobSettingLink key={index} label={label} />
                             ))}
                           </Stack>
                         </Grid>
-                        {articles.length - 1 !== index && <Divider m={0} />}
+                        {jobs.length - 1 !== index && <Divider m={0} />}
                       </Fragment>
                     ))}
                   </TabPanel>
                   <TabPanel>
-                    {articles.map(
-                      (article, index) =>
-                        article.status == "in progress" && (
+                    {jobs.map(
+                      (thisjob, index) =>
+                        thisjob.status == "in progress" && (
                           <Fragment key={index}>
                             <Grid
                               templateRows={{ base: "auto auto", md: "auto" }}
@@ -551,12 +658,12 @@ export default function Home() {
                               >
                                 <chakra.h3
                                   as={Link}
-                                  href={article.link}
+                                  href={thisjob.link}
                                   isExternal
                                   fontWeight="bold"
                                   fontSize="lg"
                                 >
-                                  {article.title}
+                                  {thisjob.title}
                                 </chakra.h3>
                                 <chakra.p
                                   fontWeight="medium"
@@ -566,7 +673,7 @@ export default function Home() {
                                     "gray.300"
                                   )}
                                 >
-                                  Published: {article.created_at}
+                                  Published: {thisjob.created_at}
                                 </chakra.p>
                                 <Badge
                                   w="max-content"
@@ -576,14 +683,14 @@ export default function Home() {
                                   )}
                                   opacity="0.8"
                                   bg={
-                                    article.status == "in progress"
+                                    thisjob.status == "in progress"
                                       ? "yellow.500"
-                                      : article.status == "completed"
+                                      : thisjob.status == "completed"
                                       ? "green.500"
                                       : "gray.500"
                                   }
                                 >
-                                  {article.status}
+                                  {thisjob.status}
                                 </Badge>
                               </Box>
                               <HStack
@@ -596,17 +703,17 @@ export default function Home() {
                                   "gray.300"
                                 )}
                               >
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegComment}
-                                  value={article.meta.comments}
+                                  value={thisjob.meta.comments}
                                 />
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegHeart}
-                                  value={article.meta.reactions}
+                                  value={thisjob.meta.reactions}
                                 />
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegEye}
-                                  value={article.meta.views}
+                                  value={thisjob.meta.views}
                                 />
                               </HStack>
                               <Stack
@@ -617,22 +724,22 @@ export default function Home() {
                                 alignItems="center"
                               >
                                 {["Manage", "Edit"].map((label, index) => (
-                                  <ArticleSettingLink
+                                  <JobSettingLink
                                     key={index}
                                     label={label}
                                   />
                                 ))}
                               </Stack>
                             </Grid>
-                            {articles.length - 1 !== index && <Divider m={0} />}
+                            {jobs.length - 1 !== index && <Divider m={0} />}
                           </Fragment>
                         )
                     )}
                   </TabPanel>
                   <TabPanel>
-                    {articles.map(
-                      (article, index) =>
-                        article.status == "completed" && (
+                    {jobs.map(
+                      (thisjob, index) =>
+                        thisjob.status == "completed" && (
                           <Fragment key={index}>
                             <Grid
                               templateRows={{ base: "auto auto", md: "auto" }}
@@ -653,12 +760,12 @@ export default function Home() {
                               >
                                 <chakra.h3
                                   as={Link}
-                                  href={article.link}
+                                  href={thisjob.link}
                                   isExternal
                                   fontWeight="bold"
                                   fontSize="lg"
                                 >
-                                  {article.title}
+                                  {thisjob.title}
                                 </chakra.h3>
                                 <chakra.p
                                   fontWeight="medium"
@@ -668,7 +775,7 @@ export default function Home() {
                                     "gray.300"
                                   )}
                                 >
-                                  Published: {article.created_at}
+                                  Published: {thisjob.created_at}
                                 </chakra.p>
                                 <Badge
                                   w="max-content"
@@ -678,14 +785,14 @@ export default function Home() {
                                   )}
                                   opacity="0.8"
                                   bg={
-                                    article.status == "in progress"
+                                    thisjob.status == "in progress"
                                       ? "yellow.500"
-                                      : article.status == "completed"
+                                      : thisjob.status == "completed"
                                       ? "green.500"
                                       : "gray.500"
                                   }
                                 >
-                                  {article.status}
+                                  {thisjob.status}
                                 </Badge>
                               </Box>
                               <HStack
@@ -698,17 +805,17 @@ export default function Home() {
                                   "gray.300"
                                 )}
                               >
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegComment}
-                                  value={article.meta.comments}
+                                  value={thisjob.meta.comments}
                                 />
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegHeart}
-                                  value={article.meta.reactions}
+                                  value={thisjob.meta.reactions}
                                 />
-                                <ArticleStat
+                                <JobStat
                                   icon={FaRegEye}
-                                  value={article.meta.views}
+                                  value={thisjob.meta.views}
                                 />
                               </HStack>
                               <Stack
@@ -719,14 +826,14 @@ export default function Home() {
                                 alignItems="center"
                               >
                                 {["Manage", "Edit"].map((label, index) => (
-                                  <ArticleSettingLink
+                                  <JobSettingLink
                                     key={index}
                                     label={label}
                                   />
                                 ))}
                               </Stack>
                             </Grid>
-                            {articles.length - 1 !== index && <Divider m={0} />}
+                            {jobs.length - 1 !== index && <Divider m={0} />}
                           </Fragment>
                         )
                     )}
@@ -740,12 +847,42 @@ export default function Home() {
             </Text>
           )}
         </VStack>
+      </Flex> */}
+      <Flex w="100%" h="100%" justify="center" align="center">
+      <Flex flexDirection="column" pt={{ base: "5px", md: "15px" }}>
+        <VStack
+          as="form"
+          spacing={8}
+          w="100%"
+          bg={useColorModeValue("white", "gray.700")}
+          rounded="lg"
+          boxShadow="lg"
+          p={{ base: 5, sm: 10 }}
+        >
+          <Flex justify="left" mb={3}>
+            <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
+              Job testing page
+            </chakra.h3>
+          </Flex>
+      {contracts.map((thisjob, index) => (
+        <ul>
+          <li>id : {thisjob.id}</li>
+          <li>client : {thisjob.client}</li>
+          <li>worker : {thisjob.worker}</li>
+          <li>deadline : {thisjob.deadline}</li>
+          <li>{thisjob.price} Ethers</li>
+          <li>state : {thisjob.state}</li>
+          <li>hash : {thisjob.hash}</li>
+        </ul>
+      ))}
+      </VStack>
+      </Flex>
       </Flex>
     </Flex>
   );
 }
 
-const ArticleStat = ({ icon, value }) => {
+const JobStat = ({ icon, value }) => {
   return (
     <Flex p={1} alignItems="center">
       <Icon as={icon} w={5} h={5} mr={2} />
@@ -754,7 +891,7 @@ const ArticleStat = ({ icon, value }) => {
   );
 };
 
-const ArticleSettingLink = ({ label }) => {
+const JobSettingLink = ({ label }) => {
   return (
     <chakra.p
       as={Link}

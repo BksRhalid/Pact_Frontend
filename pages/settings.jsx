@@ -1,205 +1,320 @@
-import React, { FC, ChangeEvent, useEffect, useState } from "react";
+import Head from "next/head";
+import React from "react";
+import { useState, useEffect } from "react";
+
 import {
-  Grid,
-  Center,
-  Select,
+  Flex,
+  Box,
+  FormLabel,
+  VStack,
   Text,
-  Button,
-  Stack,
+  useColorModeValue,
+  useToast,
+  Switch,
+  chakra,
+  Card,
+  CardHeader,
+  CardBody,
+  Icon,
+  TimelineRow,
 } from "@chakra-ui/react";
-import {
-  Pagination,
-  usePagination,
-  PaginationPage,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationPageGroup,
-  PaginationContainer,
-  PaginationSeparator
-} from "@ajna/pagination";
+import { CloseIcon, AddIcon } from "@chakra-ui/icons";
 
-const fetchPokemons = async ({pageSize,offset}) => {
-  return await fetch(
-    `https://pokeapi.co/api/v2/pokemon?limit=${pageSize}&offset=${offset}`
-  ).then(async (res) => await res.json());
-  console.log("fetchPokemons ->", pageSize, offset);
-};
+import { useAccount, useProvider, useSigner } from "wagmi";
+import { useRouter } from "next/router";
+import { ethers } from "ethers";
+import { abi, contractAddress } from "@/constants";
 
-const Home = () => {
-  // states
-  const [pokemonsTotal, setPokemonsTotal] = useState(
-    undefined
-  );
-  const [pokemons, setPokemons] = useState([]);
+const Settings = () => {
+
+    //WAGMI
+    const { address, isConnected } = useAccount();
+    const provider = useProvider();
+    const { data: signer } = useSigner();
+
+    //ROUTER FOR REDIRECTION WITH NEXTJS
+    const router = useRouter();
+
+    const textColorPrimary = useColorModeValue("gray.700", "white");
+  
+    //CHAKRA-UI
+    const toast = useToast({
+      duration: 5000,
+      isClosable: true,
+      position: "top",
+      title: "Container style is updated",
+      containerStyle: {
+        width: "500px",
+        maxWidth: "80%",
+      },
+    });
+    
+    //STATE
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [image, setImage] = useState("");
+    const [price, setPrice] = useState("");
+    const [category, setCategory] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [isClient, setIsClient] = useState(false);
+    const [isWorker, setIsWorker] = useState(false);
+    const [isJury, setIsJury] = useState(false);
+
 
   // constants
-  const outerLimit = 2;
-  const innerLimit = 2;
 
-  const {
-    pages,
-    pagesCount,
-    offset,
-    currentPage,
-    setCurrentPage,
-    setIsDisabled,
-    isDisabled,
-    pageSize,
-    setPageSize
-  } = usePagination({
-    total: pokemonsTotal,
-    limits: {
-      outer: outerLimit,
-      inner: innerLimit
-    },
-    initialState: {
-      pageSize: 5,
-      isDisabled: false,
-      currentPage: 1
-    }
-  });
-  // effects
+  // hooks
+
+  // functions
   useEffect(() => {
-    fetchPokemons(pageSize, offset)
-      .then((pokemons) => {
-        setPokemonsTotal(pokemons.count);
-        setPokemons(pokemons.results);
-      })
-      .catch((error) => console.log("App =>", error));
-      console.log("useEffect ->", pokemonsTotal, pokemons);
-  }, [currentPage, pageSize, offset]);
+    if (isConnected) {
+      getDatas();
+      console.log("isClient IN USEEFFECT", isClient);
+      console.log("isWorker IN USEEFFECT", isWorker);
+    }
+  }, [isConnected, address]);
 
-  // handlers
-  const handlePageChange = (nextPage) => {
-    // -> request new data using the page number
-    setCurrentPage(nextPage);
-    console.log("request new data with ->", nextPage);
+  const getDatas = async () => {
+      const contract = new ethers.Contract(contractAddress, abi, provider);
+      const isClient = await contract.connect(address).isClient()
+      const isWorker = await contract.connect(address).isWorker();
+      console.log("isClient in getDatas", isClient);
+      console.log("isWorker in getDatas", isWorker);
+
+      setIsClient(isClient);
+      setIsWorker(isWorker);
+      console.log("isClient in getDatas last", isClient);
+
   };
 
-  const handlePageSizeChange = (
-    event) => {
-    const pageSize = Number(event.target.value);
+  const onChange = (e) => {
 
-    setPageSize(pageSize);
+    const { id, checked } = e.target;
+    if (id === "client") {
+      if (isClient) {
+        //setIsClient(false);
+        //removeClient();
+      } else {
+      setIsClient(checked);
+      addClient();
+      }
+    } else if (id === "worker") {
+      if (isWorker) {
+        //setIsWorker(false);
+        //removeWorker();
+      } else {
+      setIsWorker(checked);
+      addWorker();
+      }
+    } else if (id === "jury") {
+      if (isJury) {
+        //setIsJury(false);
+        //removeJury();
+      } else {
+      setIsJury(checked);
+      addJury();
+      }
+    }
   };
 
-  const handleDisableClick = () => {
-    setIsDisabled((oldState) => !oldState);
+  const addClient = async () => {
+    try {
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+      let transaction = await contract.addClient()
+      await transaction.wait(1);
+      toast({
+        title: "Congratulations!",
+        description: "You are now a client.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occured, please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      console.log(error);
+    }
+    router.push("/settings");
   };
+
+  const addWorker = async () => {
+    try {
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+      let transaction = await contract.addWorker()
+      await transaction.wait(1);
+      toast({
+        title: "Congratulations!",
+        description: "You are now a worker.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occured, please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      console.log(error);
+    }
+    router.push("/settings");
+  };
+
+  const addJury = async () => {
+    try {
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+      let transaction = await contract.addJury()
+      await transaction.wait(1);
+      toast({
+        title: "Congratulations!",
+        description: "You are now a juror.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occured, please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      console.log(error);
+    }
+    router.push("/settings");
+  };
+
 
   return (
-      <Stack>
-        <Pagination
-          pagesCount={pagesCount}
-          currentPage={currentPage}
-          isDisabled={isDisabled}
-          onPageChange={handlePageChange}
+    <Flex px={{ base: "5px", md: "10px" }} pt={{ base: "5px", md: "5px" }}>
+      <VStack
+        as="form"
+        spacing={4}
+        w={{ base: "100%", md: "60%" }}
+        bg={useColorModeValue("white", "gray.700")}
+        rounded="lg"
+        boxShadow="lg"
+        p={{ base: 5 }}
+        m={{ base: 5 }}
+      >
+        <VStack spacing={4} w="50%">
+          
+
+        </VStack>
+      </VStack>
+      
+      {isConnected ? (
+          <VStack
+          w={{ base: "100%", md: "40%" }}
+          as="form"
+          spacing={8}
+          bg={useColorModeValue("white", "gray.700")}
+          rounded="lg"
+          boxShadow="lg"
+          p={{ base: 5 }}
+          m={{ base: 5 }}
         >
-          <PaginationContainer
-            align="center"
-            justify="space-between"
-            p={4}
-            w="full"
-          >
-            <PaginationPrevious
-              _hover={{
-                bg: "yellow.400"
-              }}
-              bg="yellow.300"
-              onClick={() =>
-                console.log(
-                  "Im executing my own function along with Previous component functionality"
-                )
-              }
+          <Flex justify="flex-start" mb={3}>
+            <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
+              My profile
+            </chakra.h3>
+          </Flex>
+          {/* Client */}
+          <Flex justify="left" mb={3} direction="row">
+            <FormLabel
+              _hover={{ cursor: "pointer" }}
+              direction="row"
+              maxW={"100%"}
             >
-              <Text>Previous</Text>
-            </PaginationPrevious>
-            <PaginationPageGroup
-              isInline
-              align="center"
-              separator={
-                <PaginationSeparator
-                  onClick={() =>
-                    console.log(
-                      "Im executing my own function along with Separator component functionality"
-                    )
-                  }
-                  bg="blue.300"
-                  fontSize="sm"
-                  w={7}
-                  jumpSize={11}
-                />
-              }
+              <Text color={textColorPrimary} fontSize="md" fontWeight="500">
+                Client
+              </Text>
+            </FormLabel>
+              <Switch
+                isChecked={isClient}
+                id={"client"}
+                variant="main"
+                colorScheme="whatsapp"
+                size="md"
+                onChange={onChange}
+              /> 
+          </Flex>  
+           {/* Worker */}
+           <Flex justify="left" mb={3} direction="row">
+            <FormLabel
+              _hover={{ cursor: "pointer" }}
+              direction="row"
+              maxW={"100%"}
             >
-              {pages.map((page) => (
-                <PaginationPage
-                  w={7}
-                  bg="red.300"
-                  key={`pagination_page_${page}`}
-                  page={page}
-                  onClick={() =>
-                    console.log(
-                      "Im executing my own function along with Page component functionality"
-                    )
-                  }
-                  fontSize="sm"
-                  _hover={{
-                    bg: "green.300"
-                  }}
-                  _current={{
-                    bg: "green.300",
-                    fontSize: "sm",
-                    w: 7
-                  }}
-                />
-              ))}
-            </PaginationPageGroup>
-            <PaginationNext
-              _hover={{
-                bg: "yellow.400"
-              }}
-              bg="yellow.300"
-              onClick={() =>
-                console.log(
-                  "Im executing my own function along with Next component functionality"
-                )
-              }
+              <Text color={textColorPrimary} fontSize="md" fontWeight="500">
+                Worker
+              </Text>
+            </FormLabel>
+              <Switch
+                isChecked={isWorker}
+                id={"worker"}
+                variant="main"
+                colorScheme="whatsapp"
+                size="md"
+                onChange={onChange}
+              /> 
+          </Flex> 
+            {/* Jury */}
+            <Flex justify="left" mb={3} direction="row">
+            <FormLabel
+              _hover={{ cursor: "pointer" }}
+              direction="row"
+              maxW={"100%"}
             >
-              <Text>Next</Text>
-            </PaginationNext>
-          </PaginationContainer>
-        </Pagination>
-        <Center w="full">
-          <Button
-            _hover={{
-              bg: "purple.400"
-            }}
-            bg="purple.300"
-            onClick={handleDisableClick}
-          >
-            Disable ON / OFF
-          </Button>
-          <Select ml={3} onChange={handlePageSizeChange} w={40}>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-          </Select>
-        </Center>
-        <Grid
-          gap={3}
-          mt={20}
-          px={20}
-          templateColumns="repeat(5, 1fr)"
-          templateRows="repeat(2, 1fr)"
-        >
-          {pokemons?.map(({ name }) => (
-            <Center key={name} bg="green.100" p={4}>
-              <Text>{name}</Text>
-            </Center>
-          ))}
-        </Grid>
-      </Stack>
+              <Text color={textColorPrimary} fontSize="md" fontWeight="500">
+                Jury
+              </Text>
+            </FormLabel>
+              <Switch
+                isChecked={isJury}
+                id={"jury"}
+                variant="main"
+                colorScheme="whatsapp"
+                size="md"
+                onChange={onChange}
+              /> 
+          </Flex> 
+        </VStack>
+      ) : (
+        <VStack
+        w={{ base: "100%", md: "40%" }}
+        as="form"
+        spacing={8}
+        bg={useColorModeValue("white", "gray.700")}
+        rounded="lg"
+        boxShadow="lg"
+        p={{ base: 5 }}
+        m={{ base: 5 }}
+      >
+        <Flex justify="left" mb={3}>
+          <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
+            My profile
+          </chakra.h3>
+        </Flex>
+        <Flex justify="center" mb={3}>
+          <Text color={textColorPrimary} fontSize="md" fontWeight="500">
+            Connect your wallet to see your profile
+          </Text>
+        </Flex>
+      </VStack>
+      )
+    }
+      
+    </Flex>
   );
 };
 
-export default Home;
+export default Settings;
