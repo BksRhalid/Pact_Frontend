@@ -24,8 +24,6 @@ import { abi, contractAddress } from "@/constants";
 import { useAccount, useBalance, useProvider, useSigner } from "wagmi";
 import { ethers } from "ethers";
 
-import Layout from "@/components/Layout";
-import Gigs from "@/components/Gigs/Gigs";
 import Card from "@/components/CardJob";
 
 export default function Home() {

@@ -1,40 +1,27 @@
 import React from "react";
+import { useState, useEffect } from "react";
+
 import {
-    IconButton,
-    Avatar,
-    Box,
-    CloseButton,
     Flex,
     HStack,
-    VStack,
-    Icon,
     useColorModeValue,
     Link,
-    Drawer,
-    DrawerContent,
-    Text,
-    useDisclosure,
-    Menu,
-    MenuButton,
-    MenuDivider,
-    MenuItem,
-    MenuList,
     Button,
     useColorMode,
     Show,
-    Spacer,
   } from "@chakra-ui/react";
-  import {
-  FiBell,
-  FiChevronDown,
-} from "react-icons/fi";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { FaGoogle, FaMoon, FaSun } from "react-icons/fa";
+import { GoogleAuthProvider } from "firebase/auth";
+import { FaMoon, FaSun } from "react-icons/fa";
 import { auth } from "../../firebase";
 import useAuth from "../../hooks/useAuth";
-import { useAccount } from "wagmi";
+import { useAccount, useProvider } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { AddIcon } from "@chakra-ui/icons";
+import { abi, contractAddress } from "@/constants";
+import { ethers } from "ethers";
+
+
+
 
 
 
@@ -42,6 +29,11 @@ import { AddIcon } from "@chakra-ui/icons";
 const Auth = () => {
     const { toggleColorMode, colorMode } = useColorMode();
     const { address, isConnected } = useAccount();
+    const provider = useProvider();
+    const [isClient, setIsClient] = useState(false);
+    const [isWorker, setIsWorker] = useState(false);
+
+
     const { isLoggedIn, user } = useAuth();
     const handleAuth = async () => {
     const provider = new GoogleAuthProvider();
@@ -65,6 +57,23 @@ const Auth = () => {
         // ...
         });
     };
+
+    useEffect(() => {
+      if (isConnected) {
+        getDatas();
+      }
+    }, [isConnected, address]);
+  
+
+
+    const getDatas = async () => {
+      const contract = new ethers.Contract(contractAddress, abi, provider);
+      const isClient = await contract.connect(address).isClient()
+      const isWorker = await contract.connect(address).isWorker();
+      setIsClient(isClient);
+      setIsWorker(isWorker);
+  };
+
 return (
     <>
         {isConnected && (
@@ -89,7 +98,8 @@ return (
                     </Button>
                 </Link>
                 </Show> */}
-                <Show above="md">
+                <Show above="md" >
+                {isClient && (
                 <Link href="/newjob">
                     <Button
                     size={"sm"}
@@ -108,7 +118,8 @@ return (
                     >
                     Créer un Job
                     </Button>
-                </Link>
+                </Link>)
+                }
                 </Show>
 
                 {/* <IconButton

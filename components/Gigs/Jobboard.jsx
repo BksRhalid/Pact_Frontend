@@ -29,8 +29,6 @@ import {
 import { abi, contractAddress } from "@/constants";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { ethers } from "ethers";
-import { id } from "ethers/lib/utils.js";
-
 
 
 export default function Job() {
@@ -165,10 +163,10 @@ const getContractStates = (expr) => {
 }
 
  //The user wants to take a job
- const takeJob = async(id) => {
+ const signContract = async(id) => {
   try {
     const contract = new ethers.Contract(contractAddress, abi, signer)
-    let transaction = await contract.takeJob(id)
+    let transaction = await contract.signContract(id)
     await transaction.wait(1)
     getJobs()
     toast({
@@ -348,21 +346,39 @@ const openDispute = async(id) => {
                         justifySelf="flex-end"
                         alignItems="center"
                       >
-                        { address === thisjob.client & thisjob.state == "Waiting for Worker"  ? (
+                        { address == thisjob.client & thisjob.state == "Waiting for Worker"  ? (
                         <Button    
                         leftIcon={<AiOutlineArrowRight />}
-                        bgGradient="linear(to-l, red,orange)"
-                        hoverBgGradient="linear(to-l, red,orange)"
+                        colorScheme="red"
                         color="white"
                         variant="solid"
                         size="sm"
                         rounded="md"
                         onClick={() => cancelJob(thisjob.id)}>Cancel</Button>
                     ) : 
+                    address != thisjob.client & thisjob.state == "Waiting for Worker"  ? (
+                      <Button    
+                      leftIcon={<AiOutlineArrowRight />}
+                      Variant="outline"
+                      colorScheme="green"
+                      size="sm"
+                      rounded="md"
+                      onClick={() => signContract(thisjob.id)}>Take the offer</Button>
+                    ) : 
                     thisjob.state == "Cancel By Client" || "Cancel By Freelancer" ? (
                       <Text color="red">Job canceled</Text> 
                     ) :
                     thisjob.state == "Work Started" ? (
+                      <HStack>
+                      <Button    
+                      leftIcon={<AiOutlineArrowRight />}
+                      bgGradient="linear(to-l, green.300,green.500)"
+                      hoverBgGradient="green.500"
+                      color="white"
+                      variant="solid"
+                      size="sm"
+                      rounded="md"
+                      onClick={() => setIsFinishedAndAllowPayment(thisjob.id)}>Set is Finish</Button>
                       <Button    
                       leftIcon={<AiOutlineArrowRight />}
                       bgGradient="linear(to-l, red,orange)"
@@ -372,6 +388,9 @@ const openDispute = async(id) => {
                       size="sm"
                       rounded="md"
                       onClick={() => OpenDispute(thisjob.id)}>Open a dispute</Button>
+
+                      </HStack>
+
                     ) :                   
                     ( <Text color="orange">Job taken by : <Text fontWeight="bold" color="orange" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
                     }
