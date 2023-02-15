@@ -1,63 +1,27 @@
 import { Text, Box, Button, SimpleGrid, Heading, Card, CardHeader, CardBody, CardFooter, useToast } from '@chakra-ui/react'
-import { useAccount, useContract, useSigner } from 'wagmi';
-import { useEventProvider } from '@/context/EventContext';
+import { useAccount, useContract, useSigner, useContext } from 'wagmi';
+import useLogProvider from "@/hooks/useLogProvider";
 
-const MyJob = () => {
-    const { getEvents, events, contractAddress, abi } = useEventProvider()
+
+const MyJob = (thisjob) => {
+    console.log("useLogProvider", useLogProvider())
+    const { chiffre, contractAddress} = useLogProvider()
     const { address, isConnected } = useAccount()
     const toast = useToast()
     const { data: signer } = useSigner()
-    const contract = useContract({
-        address: contractAddress,
-        abi: abi,
-        signerOrProvider: signer
-    })
-
-    const handlePay = async (id) => {
-        try {
-
-            let transaction = await contract.setIsFinishedAndPay(id)
-            await transaction.wait(2) //= wait(1) même chose
-            getEvents()
-            toast({
-                title: 'Congratulations!',
-                description: "You get this job",
-                status: 'success',
-                duration: 9000,
-                isClosable: true,
-            })
-        }
-        catch (e) {
-            toast({
-                title: 'Error',
-                description: e.message,
-                status: 'error',
-                duration: 9000,
-                isClosable: true,
-            })
-        }
-    }
 
     return (
         <Box>
-            <Heading>My dashboard</Heading>
-            <SimpleGrid spacing={4} templateColumns='repeat(auto-fill, minmax(200px, 1fr))'>
-                {events.map(event =>
-                (event.author === address &&
-                    <Card key={event.id}>
-                        <CardHeader>
-                            <Heading size='md'> {address.substring(0, 5)}...{address.substring(address.length - 4)}</Heading>
-                        </CardHeader>
-                        <CardBody>
-                            <Text>{event.description}</Text>
-                        </CardBody>
-                        <CardFooter>
-                            {event.isFinished ? <Text color="red">Job is finished</Text> : (event.worker == undefined ? '' : (<Button colorScheme="red" onClick={() => handlePay(event.id)}>Pay</Button>))}
-                        </CardFooter>
-                    </Card>
-                )
-                )}
-            </SimpleGrid>
+            <Heading>The job {thisjob.hash} </Heading>
+            <ul>
+            <li>id : {thisjob.id}</li>
+            <li>client : {thisjob.client}</li>
+            <li>worker : {thisjob.worker}</li>
+            <li>deadline : {thisjob.deadline}</li>
+            <li>{thisjob.price} Ethers</li>
+            <li>state : {thisjob.state}</li>
+            <li>hash : {thisjob.hash}</li>
+            </ul>
         </Box>
     );
 };

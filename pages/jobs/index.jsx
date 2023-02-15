@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect, Fragment } from "react";
 // Here we have used react-icons package for the icons
 import { FaRegComment, FaRegHeart, FaRegEye } from "react-icons/fa";
+import Jobboard from "@/components/Gigs/Jobboard";
 
 import {
   Flex,
@@ -64,6 +65,7 @@ export default function Home() {
     const [contractState, setContractState] = useState("")
 
 
+
   // hooks
 
   // functions
@@ -72,7 +74,7 @@ export default function Home() {
       getDatas();
       getJobs();
     }
-  }, [isConnected, address]);
+  }, [isConnected, address, contracts]);
 
   const getDatas = async () => {
       const contract = new ethers.Contract(contractAddress, abi, provider);
@@ -88,17 +90,19 @@ export default function Home() {
     const contract = new ethers.Contract(contractAddress, abi, provider)
     let NumberContracts = await contract.connect(address).contractCounter()
     NumberContracts = NumberContracts.toString();
-
     let contractsTab = []
-    for (let i = 1; i < NumberContracts; i++) {
+    for (let i = 1; i <= NumberContracts; i++) {
       let details = await contract.connect(address).contracts(i)
       let price = details.price.toString() / 1000000000000000000
       let state = getContractStates(details.state)
+      const date = new Date(details.createAt * 1000);
+      const createAt = date.toLocaleDateString()
       let thisContract = {
         client : details.client,
         worker : details.worker,
         id: i,
         hash: details.hashJob,
+        createAt : createAt,
         price : price,
         state: state,
         // created_at: details.created_at,
@@ -107,38 +111,36 @@ export default function Home() {
       contractsTab.push(thisContract)
   }
   setContracts(contractsTab)
-  console.log("tab", contractsTab)
-
 }
 
 const getContractStates = (expr) => {
   switch (expr) {
     case 0:
-      return "WaitingWorkerSign"
+      return "Waiting for Worker"
         break
     case 1:
-      return "WorkStarted"
+      return "Work Started"
         break
     case 2:
-      return "WorkFinishedSuccessufully"
+      return "Work Finished Successufully"
       break
     case 3:
-      return "DisputeOpened"
+      return "Dispute Opened"
         break  
     case 4:
-      return "ClientLostInCourt"
+      return "Client Lost in Dispute"
         break
     case 5:
-      return "WorkerLostInCourt"
+      return "Worker Lost in dispute"
       break     
       case 6:
-        return "DisputeClosed"  
+        return "Dispute Closed"  
       break 
       case 7:
-        return "CancelByFreelancer"
+        return "Cancel By Freelancer"
       break 
       case 8:
-        return "CancelByClient" 
+        return "Cancel By Client" 
       break  
       case 8:
         return "Archived"  
@@ -148,737 +150,51 @@ const getContractStates = (expr) => {
   }
 }
 
-  const jobs = [
-    {
-      title: "job 1", //title
-      link: "job id 1", //link
-      status: "in progress",
-      created_at: "31 Sept 2022",
-      meta: {
-        reactions: 5,
-        comments: 2,
-        views: 10,
-      },
-    },
-    {
-      title: "job 2",
-      link: "job id 2",
-      status: "completed",
-      created_at: "31 Sept 2022",
-      meta: {
-        reactions: 5,
-        comments: 2,
-        views: 10,
-      },
-    },
-    {
-      title: "job 3",
-      link: "job id 3",
-      status: "not started",
-      created_at: "31 Sept 2022",
-      meta: {
-        reactions: 5,
-        comments: 2,
-        views: 10,
-      },
-    },
-  ];
-
+const updateStates = (expr) => {
+  switch (expr) {
+    case 0:
+        setProgression(0)
+        setWorkflow("Voters registration ongoing")
+        setColor("gray.400")
+        setIsActive(false)
+        break
+    case 1:
+        setProgression(20)
+        setWorkflow("Registering proposals started")
+        setColor("gray.400")
+        setIsActive(true)
+        break
+    case 2:
+      setProgression(40)
+      setWorkflow("Registering proposals ended")
+      setColor("gray.400")
+      setIsActive(false)
+      break
+    case 3:
+        setProgression(60)
+        setWorkflow("Vote started")  
+        setColor("green")   
+        setIsActive(true)     
+        break  
+    case 4:
+        setProgression(80)
+        setWorkflow("Votings session ended")
+        setColor("red.500")
+        setIsActive(false)
+        break
+    case 5:
+      setProgression(100)
+      setWorkflow("Winning Proposals is ready")  
+      setColor("gray.400") 
+      setIsActive(false)
+      break          
+    default:
+      return null
+  }
+}
 
   return (
-    <Flex
-      direction="column"
-      px={{ base: "5px", md: "10px" }}
-      pt={{ base: "5px", md: "5px" }}
-    >
-      <Flex flexDirection="column" pt={{ base: "5px", md: "15px" }}>
-        <VStack
-          as="form"
-          spacing={8}
-          w="100%"
-          bg={useColorModeValue("white", "gray.700")}
-          rounded="lg"
-          boxShadow="lg"
-          p={{ base: 5, sm: 10 }}
-        >
-          <Flex justify="left" mb={3}>
-            <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
-              Job Board
-            </chakra.h3>
-          </Flex>
-          {isConnected ? (
-            <VStack
-              border="1px solid"
-              borderColor="gray.400"
-              rounded="md"
-              overflow="hidden"
-              spacing={0}
-            >
-              <Tabs colorScheme="purple">
-                <TabList>
-                  <Tab>All Jobs</Tab>
-                  <Tab>In progress</Tab>
-                  <Tab>Completed</Tab>
-                </TabList>
-                <TabPanels>
-                  <TabPanel>
-                    {contracts.map((thisjob, index) => (
-                      <Fragment key={index}>
-                        <Grid
-                          templateRows={{ base: "auto auto", md: "auto" }}
-                          w="100%"
-                          templateColumns={{ base: "unset", md: "4fr 2fr 2fr" }}
-                          p={{ base: 2, sm: 4 }}
-                          gap={3}
-                          alignItems="center"
-                          _hover={{
-                            bg: useColorModeValue("gray.200", "gray.700"),
-                          }}
-                        >
-                          <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
-                            <chakra.h3
-                              as={Link}
-                              href={`/{thisjob.id}`}
-                              isExternal
-                              fontWeight="bold"
-                              fontSize="lg"
-                            >
-                              {thisjob.title}
-                            </chakra.h3>
-                            <chakra.p
-                              fontWeight="medium"
-                              fontSize="sm"
-                              color={useColorModeValue("gray.600", "white")}
-                            >
-                              Published: {thisjob.created_at}
-                            </chakra.p>
-                            <Badge
-                              w="max-content"
-                              textColor={useColorModeValue("gray.100", "white")}
-                              opacity="0.8"
-                              bg={
-                                thisjob.status == "in progress"
-                                  ? "yellow.500"
-                                  : thisjob.status == "completed"
-                                  ? "green.500"
-                                  : "gray.400"
-                              }
-                            >
-                              {thisjob.state}
-                            </Badge>
-                          </Box>
-                          <HStack
-                            spacing={{ base: 0, sm: 3 }}
-                            alignItems="center"
-                            fontWeight="medium"
-                            fontSize={{ base: "xs", sm: "sm" }}
-                            color={useColorModeValue("gray.600", "gray.300")}
-                          >
-                            {/* <JobStat
-                              icon={FaRegComment}
-                              value={thisjob.meta.comments}
-                            />
-                            <JobStat
-                              icon={FaRegHeart}
-                              value={thisjob.meta.reactions}
-                            />
-                            <JobStat
-                              icon={FaRegEye}
-                              value={thisjob.meta.views}
-                            /> */}
-                          </HStack>
-                          <Stack
-                            spacing={2}
-                            direction="row"
-                            fontSize={{ base: "sm", sm: "md" }}
-                            justifySelf="flex-end"
-                            alignItems="center"
-                          >
-                            {["Manage", "Edit"].map((label, index) => (
-                              <JobSettingLink key={index} label={label} />
-                            ))}
-                          </Stack>
-                        </Grid>
-                        {contracts.length - 1 !== index && <Divider m={0} />}
-                      </Fragment>
-                    ))}
-                  </TabPanel>
-                  <TabPanel>
-                    {contracts.map(
-                      (thisjob, index) =>
-                        thisjob.status == "in progress" && (
-                          <Fragment key={index}>
-                            <Grid
-                              templateRows={{ base: "auto auto", md: "auto" }}
-                              w="100%"
-                              templateColumns={{
-                                base: "unset",
-                                md: "4fr 2fr 2fr",
-                              }}
-                              p={{ base: 2, sm: 4 }}
-                              gap={3}
-                              alignItems="center"
-                              _hover={{
-                                bg: useColorModeValue("gray.200", "gray.700"),
-                              }}
-                            >
-                              <Box
-                                gridColumnEnd={{ base: "span 2", md: "unset" }}
-                              >
-                                <chakra.h3
-                                  as={Link}
-                                  href={thisjob.link}
-                                  isExternal
-                                  fontWeight="bold"
-                                  fontSize="lg"
-                                >
-                                  {thisjob.hash}
-                                </chakra.h3>
-                                <chakra.p
-                                  fontWeight="medium"
-                                  fontSize="sm"
-                                  color={useColorModeValue(
-                                    "gray.600",
-                                    "gray.300"
-                                  )}
-                                >
-                                  price: {thisjob.price}
-                                </chakra.p>
-                                <Badge
-                                  w="max-content"
-                                  textColor={useColorModeValue(
-                                    "gray.100",
-                                    "white"
-                                  )}
-                                  opacity="0.8"
-                                  bg={
-                                    thisjob.state == "in progress"
-                                      ? "yellow.500"
-                                      : thisjob.status == "completed"
-                                      ? "green.500"
-                                      : "gray.400"
-                                  }
-                                >
-                                  {thisjob.state}
-                                </Badge>
-                              </Box>
-                              <HStack
-                                spacing={{ base: 0, sm: 3 }}
-                                alignItems="center"
-                                fontWeight="medium"
-                                fontSize={{ base: "xs", sm: "sm" }}
-                                color={useColorModeValue(
-                                  "gray.600",
-                                  "gray.300"
-                                )}
-                              >
-                                {/* <JobStat
-                                  icon={FaRegComment}
-                                  value={thisjob.meta.comments}
-                                />
-                                <JobStat
-                                  icon={FaRegHeart}
-                                  value={thisjob.meta.reactions}
-                                />
-                                <JobStat
-                                  icon={FaRegEye}
-                                  value={thisjob.meta.views}
-                                /> */}
-                              </HStack>
-                              <Stack
-                                spacing={2}
-                                direction="row"
-                                fontSize={{ base: "sm", sm: "md" }}
-                                justifySelf="flex-end"
-                                alignItems="center"
-                              >
-                                {["Manage", "Edit"].map((label, index) => (
-                                  <JobSettingLink
-                                    key={index}
-                                    label={label}
-                                  />
-                                ))}
-                              </Stack>
-                            </Grid>
-                            {contractsTab.length - 1 !== index && <Divider m={0} />}
-                          </Fragment>
-                        )
-                    )}
-                  </TabPanel>
-                  <TabPanel>
-                    {contracts.map(
-                      (thisjob, index) =>
-                        thisjob.status == "completed" && (
-                          <Fragment key={index}>
-                            <Grid
-                              templateRows={{ base: "auto auto", md: "auto" }}
-                              w="100%"
-                              templateColumns={{
-                                base: "unset",
-                                md: "4fr 2fr 2fr",
-                              }}
-                              p={{ base: 2, sm: 4 }}
-                              gap={3}
-                              alignItems="center"
-                              _hover={{
-                                bg: useColorModeValue("gray.200", "gray.700"),
-                              }}
-                            >
-                              <Box
-                                gridColumnEnd={{ base: "span 2", md: "unset" }}
-                              >
-                                <chakra.h3
-                                  as={Link}
-                                  href={thisjob.link}
-                                  isExternal
-                                  fontWeight="bold"
-                                  fontSize="lg"
-                                >
-                                  {thisjob.title}
-                                </chakra.h3>
-                                <chakra.p
-                                  fontWeight="medium"
-                                  fontSize="sm"
-                                  color={useColorModeValue(
-                                    "gray.600",
-                                    "gray.300"
-                                  )}
-                                >
-                                  Published: {thisjob.created_at}
-                                </chakra.p>
-                                <Badge
-                                  w="max-content"
-                                  textColor={useColorModeValue(
-                                    "gray.100",
-                                    "white"
-                                  )}
-                                  opacity="0.8"
-                                  bg={
-                                    thisjob.status == "in progress"
-                                      ? "yellow.500"
-                                      : thisjob.status == "completed"
-                                      ? "green.500"
-                                      : "gray.500"
-                                  }
-                                >
-                                  {thisjob.status}
-                                </Badge>
-                              </Box>
-                              <HStack
-                                spacing={{ base: 0, sm: 3 }}
-                                alignItems="center"
-                                fontWeight="medium"
-                                fontSize={{ base: "xs", sm: "sm" }}
-                                color={useColorModeValue(
-                                  "gray.600",
-                                  "gray.300"
-                                )}
-                              >
-                                {/* <JobStat
-                                  icon={FaRegComment}
-                                  value={thisjob.meta.comments}
-                                />
-                                <JobStat
-                                  icon={FaRegHeart}
-                                  value={thisjob.meta.reactions}
-                                />
-                                <JobStat
-                                  icon={FaRegEye}
-                                  value={thisjob.meta.views}
-                                /> */}
-                              </HStack>
-                              <Stack
-                                spacing={2}
-                                direction="row"
-                                fontSize={{ base: "sm", sm: "md" }}
-                                justifySelf="flex-end"
-                                alignItems="center"
-                              >
-                                {["Manage", "Edit"].map((label, index) => (
-                                  <JobSettingLink
-                                    key={index}
-                                    label={label}
-                                  />
-                                ))}
-                              </Stack>
-                            </Grid>
-                            {contractsTab.length - 1 !== index && <Divider m={0} />}
-                          </Fragment>
-                        )
-                    )}
-                  </TabPanel>
-               
-                  </TabPanels>
-                
-              </Tabs>
-            </VStack>
-          ) : (
-            <Text as="b" fontSize="lg">
-              Merci de vous connecter à votre wallet
-            </Text>
-          )}
-        </VStack>
-      </Flex>
-      <Divider />
-      {/* DRAFT BOARD END */}
-      {/* <Flex flexDirection="column" pt={{ base: "5px", md: "15px" }}>
-        <VStack
-          as="form"
-          spacing={8}
-          w="100%"
-          bg={useColorModeValue("white", "gray.700")}
-          rounded="lg"
-          boxShadow="lg"
-          p={{ base: 5, sm: 10 }}
-        >
-          <Flex justify="left" mb={3}>
-            <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
-              Draft Board
-            </chakra.h3>
-          </Flex>
-          {!isConnected ? (
-            <VStack
-              border="1px solid"
-              borderColor="gray.400"
-              rounded="md"
-              overflow="hidden"
-              spacing={0}
-            >
-              <Tabs colorScheme="purple">
-                <TabList>
-                  <Tab>All Jobs</Tab>
-                  <Tab>In progress</Tab>
-                  <Tab>Completed</Tab>
-                </TabList>
-
-                <TabPanels>
-                  <TabPanel>
-                    {jobs.map((thisjob, index) => (
-                      <Fragment key={index}>
-                        <Grid
-                          templateRows={{ base: "auto auto", md: "auto" }}
-                          w="100%"
-                          templateColumns={{ base: "unset", md: "4fr 2fr 2fr" }}
-                          p={{ base: 2, sm: 4 }}
-                          gap={3}
-                          alignItems="center"
-                          _hover={{
-                            bg: useColorModeValue("gray.200", "gray.700"),
-                          }}
-                        >
-                          <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
-                            <chakra.h3
-                              as={Link}
-                              href={thisjob.link}
-                              isExternal
-                              fontWeight="bold"
-                              fontSize="lg"
-                            >
-                              {thisjob.title}
-                            </chakra.h3>
-                            <chakra.p
-                              fontWeight="medium"
-                              fontSize="sm"
-                              color={useColorModeValue("gray.600", "gray.300")}
-                            >
-                              Published: {thisjob.created_at}
-                            </chakra.p>
-                            <Badge
-                              w="max-content"
-                              textColor={useColorModeValue("gray.100", "white")}
-                              opacity="0.8"
-                              bg={
-                                thisjob.status == "in progress"
-                                  ? "yellow.500"
-                                  : thisjob.status == "completed"
-                                  ? "green.500"
-                                  : "gray.400"
-                              }
-                            >
-                              {thisjob.status}
-                            </Badge>
-                          </Box>
-                          <HStack
-                            spacing={{ base: 0, sm: 3 }}
-                            alignItems="center"
-                            fontWeight="medium"
-                            fontSize={{ base: "xs", sm: "sm" }}
-                            color={useColorModeValue("gray.600", "gray.300")}
-                          >
-                            <JobStat
-                              icon={FaRegComment}
-                              value={thisjob.meta.comments}
-                            />
-                            <JobStat
-                              icon={FaRegHeart}
-                              value={thisjob.meta.reactions}
-                            />
-                            <JobStat
-                              icon={FaRegEye}
-                              value={thisjob.meta.views}
-                            />
-                          </HStack>
-                          <Stack
-                            spacing={2}
-                            direction="row"
-                            fontSize={{ base: "sm", sm: "md" }}
-                            justifySelf="flex-end"
-                            alignItems="center"
-                          >
-                            {["Manage", "Edit"].map((label, index) => (
-                              <JobSettingLink key={index} label={label} />
-                            ))}
-                          </Stack>
-                        </Grid>
-                        {jobs.length - 1 !== index && <Divider m={0} />}
-                      </Fragment>
-                    ))}
-                  </TabPanel>
-                  <TabPanel>
-                    {jobs.map(
-                      (thisjob, index) =>
-                        thisjob.status == "in progress" && (
-                          <Fragment key={index}>
-                            <Grid
-                              templateRows={{ base: "auto auto", md: "auto" }}
-                              w="100%"
-                              templateColumns={{
-                                base: "unset",
-                                md: "4fr 2fr 2fr",
-                              }}
-                              p={{ base: 2, sm: 4 }}
-                              gap={3}
-                              alignItems="center"
-                              _hover={{
-                                bg: useColorModeValue("gray.200", "gray.700"),
-                              }}
-                            >
-                              <Box
-                                gridColumnEnd={{ base: "span 2", md: "unset" }}
-                              >
-                                <chakra.h3
-                                  as={Link}
-                                  href={thisjob.link}
-                                  isExternal
-                                  fontWeight="bold"
-                                  fontSize="lg"
-                                >
-                                  {thisjob.title}
-                                </chakra.h3>
-                                <chakra.p
-                                  fontWeight="medium"
-                                  fontSize="sm"
-                                  color={useColorModeValue(
-                                    "gray.600",
-                                    "gray.300"
-                                  )}
-                                >
-                                  Published: {thisjob.created_at}
-                                </chakra.p>
-                                <Badge
-                                  w="max-content"
-                                  textColor={useColorModeValue(
-                                    "gray.100",
-                                    "white"
-                                  )}
-                                  opacity="0.8"
-                                  bg={
-                                    thisjob.status == "in progress"
-                                      ? "yellow.500"
-                                      : thisjob.status == "completed"
-                                      ? "green.500"
-                                      : "gray.500"
-                                  }
-                                >
-                                  {thisjob.status}
-                                </Badge>
-                              </Box>
-                              <HStack
-                                spacing={{ base: 0, sm: 3 }}
-                                alignItems="center"
-                                fontWeight="medium"
-                                fontSize={{ base: "xs", sm: "sm" }}
-                                color={useColorModeValue(
-                                  "gray.600",
-                                  "gray.300"
-                                )}
-                              >
-                                <JobStat
-                                  icon={FaRegComment}
-                                  value={thisjob.meta.comments}
-                                />
-                                <JobStat
-                                  icon={FaRegHeart}
-                                  value={thisjob.meta.reactions}
-                                />
-                                <JobStat
-                                  icon={FaRegEye}
-                                  value={thisjob.meta.views}
-                                />
-                              </HStack>
-                              <Stack
-                                spacing={2}
-                                direction="row"
-                                fontSize={{ base: "sm", sm: "md" }}
-                                justifySelf="flex-end"
-                                alignItems="center"
-                              >
-                                {["Manage", "Edit"].map((label, index) => (
-                                  <JobSettingLink
-                                    key={index}
-                                    label={label}
-                                  />
-                                ))}
-                              </Stack>
-                            </Grid>
-                            {jobs.length - 1 !== index && <Divider m={0} />}
-                          </Fragment>
-                        )
-                    )}
-                  </TabPanel>
-                  <TabPanel>
-                    {jobs.map(
-                      (thisjob, index) =>
-                        thisjob.status == "completed" && (
-                          <Fragment key={index}>
-                            <Grid
-                              templateRows={{ base: "auto auto", md: "auto" }}
-                              w="100%"
-                              templateColumns={{
-                                base: "unset",
-                                md: "4fr 2fr 2fr",
-                              }}
-                              p={{ base: 2, sm: 4 }}
-                              gap={3}
-                              alignItems="center"
-                              _hover={{
-                                bg: useColorModeValue("gray.200", "gray.700"),
-                              }}
-                            >
-                              <Box
-                                gridColumnEnd={{ base: "span 2", md: "unset" }}
-                              >
-                                <chakra.h3
-                                  as={Link}
-                                  href={thisjob.link}
-                                  isExternal
-                                  fontWeight="bold"
-                                  fontSize="lg"
-                                >
-                                  {thisjob.title}
-                                </chakra.h3>
-                                <chakra.p
-                                  fontWeight="medium"
-                                  fontSize="sm"
-                                  color={useColorModeValue(
-                                    "gray.600",
-                                    "gray.300"
-                                  )}
-                                >
-                                  Published: {thisjob.created_at}
-                                </chakra.p>
-                                <Badge
-                                  w="max-content"
-                                  textColor={useColorModeValue(
-                                    "gray.100",
-                                    "white"
-                                  )}
-                                  opacity="0.8"
-                                  bg={
-                                    thisjob.status == "in progress"
-                                      ? "yellow.500"
-                                      : thisjob.status == "completed"
-                                      ? "green.500"
-                                      : "gray.500"
-                                  }
-                                >
-                                  {thisjob.status}
-                                </Badge>
-                              </Box>
-                              <HStack
-                                spacing={{ base: 0, sm: 3 }}
-                                alignItems="center"
-                                fontWeight="medium"
-                                fontSize={{ base: "xs", sm: "sm" }}
-                                color={useColorModeValue(
-                                  "gray.600",
-                                  "gray.300"
-                                )}
-                              >
-                                <JobStat
-                                  icon={FaRegComment}
-                                  value={thisjob.meta.comments}
-                                />
-                                <JobStat
-                                  icon={FaRegHeart}
-                                  value={thisjob.meta.reactions}
-                                />
-                                <JobStat
-                                  icon={FaRegEye}
-                                  value={thisjob.meta.views}
-                                />
-                              </HStack>
-                              <Stack
-                                spacing={2}
-                                direction="row"
-                                fontSize={{ base: "sm", sm: "md" }}
-                                justifySelf="flex-end"
-                                alignItems="center"
-                              >
-                                {["Manage", "Edit"].map((label, index) => (
-                                  <JobSettingLink
-                                    key={index}
-                                    label={label}
-                                  />
-                                ))}
-                              </Stack>
-                            </Grid>
-                            {jobs.length - 1 !== index && <Divider m={0} />}
-                          </Fragment>
-                        )
-                    )}
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
-            </VStack>
-          ) : (
-            <Text as="b" fontSize="lg">
-              Merci de vous connecter à votre wallet
-            </Text>
-          )}
-        </VStack>
-      </Flex> */}
-      <Flex w="100%" h="100%" justify="center" align="center">
-      <Flex flexDirection="column" pt={{ base: "5px", md: "15px" }}>
-        <VStack
-          as="form"
-          spacing={8}
-          w="100%"
-          bg={useColorModeValue("white", "gray.700")}
-          rounded="lg"
-          boxShadow="lg"
-          p={{ base: 5, sm: 10 }}
-        >
-          <Flex justify="left" mb={3}>
-            <chakra.h3 fontSize="2xl" fontWeight="bold" textAlign="center">
-              Job testing page
-            </chakra.h3>
-          </Flex>
-      {contracts.map((thisjob, index) => (
-        <ul>
-          <li>id : {thisjob.id}</li>
-          <li>client : {thisjob.client}</li>
-          <li>worker : {thisjob.worker}</li>
-          <li>deadline : {thisjob.deadline}</li>
-          <li>{thisjob.price} Ethers</li>
-          <li>state : {thisjob.state}</li>
-          <li>hash : {thisjob.hash}</li>
-        </ul>
-      ))}
-      </VStack>
-      </Flex>
-      </Flex>
-    </Flex>
+    <Jobboard />
   );
 }
 
@@ -891,15 +207,17 @@ const JobStat = ({ icon, value }) => {
   );
 };
 
-const JobSettingLink = ({ label }) => {
+const JobSettingLink = ({ label, id }) => {
   return (
     <chakra.p
       as={Link}
       _hover={{ bg: useColorModeValue("gray.400", "gray.600") }}
       p={1}
       rounded="md"
+      cursor="pointer"
+      onClick={() => alert("clicked on " + label + " " + id)}
     >
-      {label}
+      {label} {id}
     </chakra.p>
   );
 };

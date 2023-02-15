@@ -34,6 +34,12 @@ export const abi = [
       {
         indexed: false,
         internalType: "uint256",
+        name: "createAt",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
         name: "deadline",
         type: "uint256",
       },
@@ -228,6 +234,25 @@ export const abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "clients",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "contractCounter",
     outputs: [
@@ -291,6 +316,11 @@ export const abi = [
       },
       {
         internalType: "uint256",
+        name: "createAt",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
         name: "price",
         type: "uint256",
       },
@@ -308,6 +338,11 @@ export const abi = [
       {
         internalType: "uint256",
         name: "_deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_today",
         type: "uint256",
       },
       {
@@ -508,6 +543,25 @@ export const abi = [
     inputs: [
       {
         internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "juryPool",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
         name: "_contractId",
         type: "uint256",
       },
@@ -591,6 +645,25 @@ export const abi = [
     name: "vote",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "workers",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ];

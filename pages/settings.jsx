@@ -69,22 +69,15 @@ const Settings = () => {
   useEffect(() => {
     if (isConnected) {
       getDatas();
-      console.log("isClient IN USEEFFECT", isClient);
-      console.log("isWorker IN USEEFFECT", isWorker);
     }
   }, [isConnected, address]);
 
   const getDatas = async () => {
       const contract = new ethers.Contract(contractAddress, abi, provider);
       const isClient = await contract.connect(address).isClient()
-      const isWorker = await contract.connect(address).isWorker();
-      console.log("isClient in getDatas", isClient);
-      console.log("isWorker in getDatas", isWorker);
-
+      const isWorker = await contract.connect(address).isWorker();;
       setIsClient(isClient);
       setIsWorker(isWorker);
-      console.log("isClient in getDatas last", isClient);
-
   };
 
   const onChange = (e) => {

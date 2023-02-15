@@ -50,7 +50,7 @@ const LinkItems = ([] = [
   { name: "Dashboard", icon: FiHome, src: "/" },
   { name: "Jobs", icon: FiList, src: "/jobs" },
   { name: "Freelance", icon: FiCompass, src: "/freelance" },
-  { name: "Wallet", icon: FiStar, src: "/wallet" },
+  // { name: "Wallet", icon: FiStar, src: "/wallet" },
   { name: "Settings", icon: FiSettings, src: "/settings" },
 ]);
 

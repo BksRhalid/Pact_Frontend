@@ -27,6 +27,7 @@ import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import { abi, contractAddress } from "@/constants";
 import { MdAdd } from "react-icons/md";
+import { delay } from "framer-motion";
 
 const newJob = () => {
   //WAGMI
@@ -46,7 +47,7 @@ const newJob = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(null);
   const [worker, setWorker] = useState(null);
-  const [deadline, setDeadline] = useState(10);
+  const [deadline, setDeadline] = useState("");
 
   //ROUTER FOR REDIRECTION WITH NEXTJS
   const router = useRouter();
@@ -54,7 +55,6 @@ const newJob = () => {
   useEffect(() => {
     if (isConnected) {
       getDatas();
-      console.log("isClient in useEffect", isClient);
     }
   }, [isConnected, address]);
 
@@ -69,14 +69,21 @@ const newJob = () => {
   };
 
   const addjob = async () => {
-    // const jobHash = keccak256(title + description) and push to blockchain
-    const jobHash = ethers.utils.keccak256(title + description);
-    // const jobHash = ethers.utils.formatBytes32String(title + description);
-    console.log("jobHash", jobHash);
+    let jobHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(title + description));
+    // console.log("job", job);
     const _amount = ethers.utils.parseEther(price);
+    const value = ethers.BigNumber.from(deadline);
+    // JS date object with current date
+    const today = new Date();
+    // ⚠️ JS returns the value in miliseconds
+    const mseconds = today.getTime();
+    // divided to get the just seconds
+    const seconds = Math.floor(mseconds / 1000);
+    // single liner
+    const dateInSecs = Math.floor(new Date().getTime() / 1000);   
     try {
       const contract = new ethers.Contract(contractAddress, abi, signer);
-      let transaction = await contract.createContract(jobHash, deadline, {
+      let transaction = await contract.createContract(deadline,dateInSecs,jobHash, {
         value: _amount,
         gasLimit: 1000000,
       });
@@ -98,7 +105,7 @@ const newJob = () => {
       });
       console.log(error.message);
     }
-    router.push("/");
+    router.push("/jobs");
   };
 
   return (
@@ -136,6 +143,15 @@ const newJob = () => {
                       placeholder="budget"
                       rounded="md"
                       onChange={(e) => setPrice(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormControl id="time">
+                    <FormLabel>How many days</FormLabel>
+                    <Input
+                      type="number"
+                      placeholder="Deadline in days"
+                      rounded="md"
+                      onChange={(e) => setDeadline(e.target.value)}
                     />
                   </FormControl>
                 </Stack>
@@ -242,7 +258,7 @@ const newJob = () => {
           <Text> PLEASE CONNECT </Text>
         </VStack>
         )}
-    </Flex>
+      </Flex>
   );
 };
 
