@@ -74,9 +74,14 @@ export default function Job() {
   useEffect(() => {
     if (isConnected) {
       getDatas();
-      getJobs();
     }
   }, [isConnected, address, contracts]);
+
+  useEffect(() => {
+    if (isConnected) {
+      getJobs();
+    }
+  }, [isConnected, address]);
 
   const getDatas = async () => {
       const contract = new ethers.Contract(contractAddress, abi, provider);
@@ -126,35 +131,39 @@ const getContractStates = (expr) => {
       return "Work Started"
         break
     case 2:
+      setColorState("orange")
+      return "Waiting Client Review"
+      break
+    case 3:
       setColorState("green.500")
       return "Work Finished Successufully"
       break
-    case 3:
+    case 4:
       setColorState("red.500")
       return "Dispute Opened"
         break  
-    case 4:
-      setColorState("red.500")
-      return "Client Lost in Dispute"
-        break
     case 5:
       setColorState("red.500")
-      return "Worker Lost in dispute"
+      return "Client Lost Dispute"
+        break
+    case 6:
+      setColorState("red.500")
+      return "Worker Lost Dispute"
       break     
-      case 6:
+      case 7:
         setColorState("blue.500")
         return "Dispute Closed"  
       break 
-      case 7:
+      case 8:
         setColorState("red.500")
         return "Cancel By Freelancer"
       break 
-      case 8:
+      case 9:
         setColorState("red.500")
         return "Cancel By Client" 
       break  
-      case 8:
-        setColorState("black")
+      case 10:
+        setColorState("gray.500")
         return "Archived"  
       break    
       default:
@@ -184,11 +193,34 @@ const getContractStates = (expr) => {
   }
 }
 
-//The user wants to pay a job
-const payJob = async(id) => {
+//The worker want a client to review his work
+const requestClientReview = async(id) => {
   try {
     const contract = new ethers.Contract(contractAddress, abi, signer)
-    let transaction = await contract.setIsFinishedAndPay(id)
+    let transaction = await contract.requestClientValidation(id)
+    await transaction.wait(1)
+    getJobs()
+    toast({
+      title: 'Congratulations!',
+      description: "You asked the client to review your work!",
+      status: 'success',
+    })
+  }
+  catch {
+    toast({
+      title: 'Error',
+      description: "An error occured, please try again.",
+      status: 'error',
+    })
+  }
+}
+
+
+//The user wants to pay a job
+const setIsDone = async(id) => {
+  try {
+    const contract = new ethers.Contract(contractAddress, abi, signer)
+    let transaction = await contract.setIsFinishedAndAllowPayment(id)
     await transaction.wait(1)
     getJobs()
     toast({
@@ -209,24 +241,44 @@ const payJob = async(id) => {
 // The user cancels a job
 const cancelJob = async(id) => {
   try {
-    if (isClient) {
       const contract = new ethers.Contract(contractAddress, abi, signer)
-      let transaction = await contract.cancelContractByClient(id)
-      await transaction.wait(1)
-      getJobs()
-     } 
-      else if (isWorker) {
-      const contract = new ethers.Contract(contractAddress, abi, signer)
-      let transaction = await contract.cancelContractByWorker(id)
-      await transaction.wait(1)
-      getJobs()
-     }
-    toast({
-      title: 'Congratulations!',
-      description: "You canceled the job!",
-      status: 'success',
-
-    })
+      const thisContract = await contract.connect(address).contracts(id)
+      const client = thisContract.client
+      const worker = thisContract.worker
+        try {
+          if (address === client) {
+          let transaction = await contract.cancelContractByClient(id)
+          await transaction.wait(1)
+          getJobs()
+          toast({
+            title: 'Congratulations!',
+            description: "You canceled the job!",
+            status: 'success',
+          })
+        }
+      else if (address === worker) {
+        let transaction = await contract.cancelContractByWorker(id)
+        await transaction.wait(1)
+        getJobs()
+        toast({
+          title: 'Congratulations!',
+          description: "You canceled the job!",
+          status: 'success',
+        })
+      } else {
+        toast({
+          title: 'Error',
+          description: "You're note allowed to cancel this job.",
+          status: 'error',
+        })
+      }}
+      catch {
+        toast({
+          title: 'Error',
+          description: "An error occured, please try again.",
+          status: 'error',
+        })
+      }
   }
   catch {
     toast({
@@ -242,6 +294,7 @@ const openDispute = async(id) => {
   try {
     const contract = new ethers.Contract(contractAddress, abi, signer)
     let transaction = await contract.openDispute(id)
+    console.log(transaction)
     await transaction.wait(1)
     getJobs()
     toast({
@@ -250,7 +303,8 @@ const openDispute = async(id) => {
       status: 'success',
     })
   }
-  catch {
+  catch (e) {
+    console.log("error", e.message )
     toast({
       title: 'Error',
       description: "An error occured, please try again.",
@@ -339,61 +393,168 @@ const openDispute = async(id) => {
                         fontSize={{ base: "xs", sm: "sm" }}
                         color={useColorModeValue("gray.600", "gray.300")}
                       ></HStack>
-                      <Stack
+                        <Stack
                         spacing={2}
                         direction="row"
                         fontSize={{ base: "sm", sm: "md" }}
                         justifySelf="flex-end"
                         alignItems="center"
-                      >
-                        { address == thisjob.client & thisjob.state == "Waiting for Worker"  ? (
-                        <Button    
-                        leftIcon={<AiOutlineArrowRight />}
-                        colorScheme="red"
-                        color="white"
-                        variant="solid"
-                        size="sm"
-                        rounded="md"
-                        onClick={() => cancelJob(thisjob.id)}>Cancel</Button>
-                    ) : 
-                    address != thisjob.client & thisjob.state == "Waiting for Worker"  ? (
-                      <Button    
-                      leftIcon={<AiOutlineArrowRight />}
-                      Variant="outline"
-                      colorScheme="green"
-                      size="sm"
-                      rounded="md"
-                      onClick={() => signContract(thisjob.id)}>Take the offer</Button>
-                    ) : 
-                    thisjob.state == "Cancel By Client" || "Cancel By Freelancer" ? (
-                      <Text color="red">Job canceled</Text> 
-                    ) :
-                    thisjob.state == "Work Started" ? (
-                      <HStack>
-                      <Button    
-                      leftIcon={<AiOutlineArrowRight />}
-                      bgGradient="linear(to-l, green.300,green.500)"
-                      hoverBgGradient="green.500"
-                      color="white"
-                      variant="solid"
-                      size="sm"
-                      rounded="md"
-                      onClick={() => setIsFinishedAndAllowPayment(thisjob.id)}>Set is Finish</Button>
-                      <Button    
-                      leftIcon={<AiOutlineArrowRight />}
-                      bgGradient="linear(to-l, red,orange)"
-                      hoverBgGradient="linear(to-l, red,orange)"
-                      color="white"
-                      variant="solid"
-                      size="sm"
-                      rounded="md"
-                      onClick={() => OpenDispute(thisjob.id)}>Open a dispute</Button>
+                      > 
+                      {(address == thisjob.client ? (
+                        (() => {
+                        switch (thisjob.state) {
+                          case "Waiting for Worker":
+                            return (  <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              colorScheme="red"
+                              color="white"
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => cancelJob(thisjob.id)}>Cancel</Button>)
+                            break;
+                          case "Cancel By Client":
+                            return (<Text color="red">Job canceled by Client</Text>)
+                            break;
+                          case "Cancel By Freelancer":
+                            return (<Text color="red">Job canceled by Freelancer</Text>)
+                            break;
+                          case "Work Started":
+                            return (
+                            <Stack>
+                              <Text color="orange" > Job Taken by : <Text fontWeight="bold" color="orange" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                              <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => openDispute(thisjob.id)}>Open a dispute</Button>
+                                </Stack>)
+                            break;
+                          case "Waiting Client Review":
+                            return (<Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              colorScheme="red"
+                              color="white"
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => setIsDone(thisjob.id)}>Validate the job</Button>)
+                            break;
+                          case "Work Finished":
+                            return (
+                            <Text color="green" > Job Done by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
+                            break;
+                          case "Dispute Opened":
+                            return (<Text color="red" > Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
+                            break;
+                          case "Dispute Closed":
+                            return (<Text > "Dispute Closed" </Text>)
+                            break;
+                          case "Payment Done":
+                            return (<Text > "Payment Done" </Text>)
+                            break;
+                          case "Archived":
+                              return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                            break;
+                          default:
+                            return (<Text > "default" {thisjob.state}  </Text>)
+                        }
+                      })()
+                      ) : (
+                        (() => {
+                          switch (thisjob.state) {
+                            case "Waiting for Worker":
+                            return (
+                            <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              Variant="outline"
+                              colorScheme="green"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => signContract(thisjob.id)}>Take the offer</Button>)
+                            break;
+                            case "Cancel By Client":
+                              return (<Text color="red">Job canceled by Client</Text>)
+                              break;
+                            case "Cancel By Freelancer":
+                              return (<Text color="red">Job canceled by Freelancer</Text>)
+                              break;
+                            case "Work Started":
+                              return (
+                                <Stack alignContent={"left"}>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="green"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => requestClientReview(thisjob.id)}>Request validation</Button>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => openDispute(thisjob.id)}>Open a dispute</Button>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="red"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => cancelJob(thisjob.id)}>Quit the job</Button>
+                                </Stack>
+                                )
+                              break;
+                            case "Waiting Client Review":
+                            return (<Text color="orange" > Waiting for Client Review </Text>)
+                            break;
+                            case "Work Finished":
+                              return (
+                                <Stack alignContent={"left"}>
+                                  <Text color="green"> Job Done by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                  <Button    
+                                  leftIcon={<AiOutlineArrowRight />}
+                                  colorScheme="red"
+                                  color="white"
+                                  variant="solid"
+                                  size="sm"
+                                  rounded="md"
+                                  onClick={() => cancelJob(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                              break;
+                            case "Dispute Opened":
+                              return (<Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
+                              break;
+                            case "Dispute Closed":
+                              return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
+                              break;
+                            case "Payment Done":
+                              return (<Text fontWeight="bold" color="green" > "Payment Done" </Text>)
+                              break;
+                            case "Archived":
+                                return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                              break;
+                            default:
+                              return (<Text > "default" {thisjob.state} </Text>)
+                          }
+                        })()
+                     
+                     
+                     
+                     
+                     
+                     
+                     
+                     ))}
+      
 
-                      </HStack>
-
-                    ) :                   
-                    ( <Text color="orange">Job taken by : <Text fontWeight="bold" color="orange" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
-                    }
                       </Stack>
                     </Grid>
                     {contracts.length - 1 !== index && <Divider m={0} />}
