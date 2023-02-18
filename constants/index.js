@@ -5,6 +5,11 @@
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 export const abi = [
   {
+    inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -51,7 +56,7 @@ export const abi = [
       },
       {
         indexed: false,
-        internalType: "enum FreelanceContract.ContractState",
+        internalType: "enum freelanceContract.ContractState",
         name: "state",
         type: "uint8",
       },
@@ -115,13 +120,13 @@ export const abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "enum FreelanceContract.ContractState",
+        internalType: "enum freelanceContract.ContractState",
         name: "previousStatus",
         type: "uint8",
       },
       {
         indexed: false,
-        internalType: "enum FreelanceContract.ContractState",
+        internalType: "enum freelanceContract.ContractState",
         name: "newStatus",
         type: "uint8",
       },
@@ -159,13 +164,13 @@ export const abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "enum FreelanceContract.DisputeState",
+        internalType: "enum freelanceContract.DisputeState",
         name: "previousStatus",
         type: "uint8",
       },
       {
         indexed: false,
-        internalType: "enum FreelanceContract.DisputeState",
+        internalType: "enum freelanceContract.DisputeState",
         name: "newStatus",
         type: "uint8",
       },
@@ -182,8 +187,14 @@ export const abi = [
         name: "disputeId",
         type: "uint256",
       },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "juryAddress",
+        type: "address",
+      },
     ],
-    name: "JuryVote",
+    name: "Voted",
     type: "event",
   },
   {
@@ -276,7 +287,7 @@ export const abi = [
     name: "contractStates",
     outputs: [
       {
-        internalType: "enum FreelanceContract.ContractState",
+        internalType: "enum freelanceContract.ContractState",
         name: "",
         type: "uint8",
       },
@@ -295,12 +306,12 @@ export const abi = [
     name: "contracts",
     outputs: [
       {
-        internalType: "address",
+        internalType: "address payable",
         name: "client",
         type: "address",
       },
       {
-        internalType: "address",
+        internalType: "address payable",
         name: "worker",
         type: "address",
       },
@@ -325,9 +336,14 @@ export const abi = [
         type: "uint256",
       },
       {
-        internalType: "enum FreelanceContract.ContractState",
+        internalType: "enum freelanceContract.ContractState",
         name: "state",
         type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "disputeId",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -380,7 +396,7 @@ export const abi = [
     name: "disputeStates",
     outputs: [
       {
-        internalType: "enum FreelanceContract.DisputeState",
+        internalType: "enum freelanceContract.DisputeState",
         name: "",
         type: "uint8",
       },
@@ -409,11 +425,6 @@ export const abi = [
         type: "uint256",
       },
       {
-        internalType: "address",
-        name: "disputeInitiator",
-        type: "address",
-      },
-      {
         internalType: "uint256",
         name: "totalVoteCount",
         type: "uint256",
@@ -429,7 +440,12 @@ export const abi = [
         type: "uint256",
       },
       {
-        internalType: "enum FreelanceContract.DisputeState",
+        internalType: "address",
+        name: "disputeInitiator",
+        type: "address",
+      },
+      {
+        internalType: "enum freelanceContract.DisputeState",
         name: "state",
         type: "uint8",
       },
@@ -488,13 +504,18 @@ export const abi = [
         name: "_disputeId",
         type: "uint256",
       },
+      {
+        internalType: "address",
+        name: "_juryAddress",
+        type: "address",
+      },
     ],
-    name: "getDisputeJury",
+    name: "hasVoted",
     outputs: [
       {
-        internalType: "address[]",
-        name: "juryList",
-        type: "address[]",
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -503,6 +524,30 @@ export const abi = [
   {
     inputs: [],
     name: "isClient",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_disputeId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_juryAddress",
+        type: "address",
+      },
+    ],
+    name: "isJuryInDispute",
     outputs: [
       {
         internalType: "bool",
@@ -534,6 +579,32 @@ export const abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "juryFee",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "juryLength",
+    outputs: [
+      {
+        internalType: "uint24",
+        name: "",
+        type: "uint24",
       },
     ],
     stateMutability: "view",
@@ -572,10 +643,36 @@ export const abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "protocolFee",
+    outputs: [
+      {
+        internalType: "uint8",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
-        name: "_upper",
+        name: "_contractId",
+        type: "uint256",
+      },
+    ],
+    name: "pullPayment",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_seed",
         type: "uint256",
       },
     ],
@@ -587,20 +684,20 @@ export const abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [],
-    name: "randomResult",
-    outputs: [
+    inputs: [
       {
         internalType: "uint256",
-        name: "",
+        name: "_contractId",
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    name: "requestClientValidation",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

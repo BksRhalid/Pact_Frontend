@@ -24,11 +24,18 @@ import {
   Tab,
   TabPanel,
   useToast,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
 } from "@chakra-ui/react";
 
 import { abi, contractAddress } from "@/constants";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { ethers } from "ethers";
+import { MdOutlineBedroomChild } from "react-icons/md";
 
 
 export default function Job() {
@@ -36,10 +43,6 @@ export default function Job() {
     const { address, isConnected } = useAccount();
     const provider = useProvider();
     const { data: signer } = useSigner();
-
-
-
-
 
     //ROUTER FOR REDIRECTION WITH NEXTJS
     // const router = useRouter();
@@ -65,21 +68,52 @@ export default function Job() {
     const [isWorker, setIsWorker] = useState(false);
     const [contracts, setContracts] = useState([])
     const [contractState, setContractState] = useState("")
+    const [blockNumber, setBlockNumber] = useState(0)
+    const [juryPool, setJuryPool] = useState([])
+    const [juryCounter, setJuryCounter] = useState(0)
 
 
+    // get block number
+    const getBlockNumber = async () => {
+      const prevblock = blockNumber || 0;
+      const block = await provider.getBlockNumber();
+      setBlockNumber(block);
+      if (block > prevblock) {
+        getDatas();
+        getJuryPool();
+        getJobs();
+      }
+    };
+
+    // get jury pool
+    const getJuryPool = async () => {
+      const contract = new ethers.Contract(contractAddress, abi, provider);
+      const juryCounter = await contract.juryCounter();
+      const Pool = [];
+      for (let i = 1; i <= juryCounter; i++) {
+        const jury = await contract.juryPool(i);
+        Pool.push(jury);
+      }
+      setJuryPool(Pool);
+    };
 
   // hooks
+  useEffect(() => {
+      const interval = setInterval(() => {
+        getBlockNumber();
+      }, 1000);
+      return () => clearInterval(interval);
+    }, [blockNumber]);
 
-  // functions
+  useEffect(() => { 
+    if (isConnected) {
+      getJobs();
+    }
+  }, []);
+
   useEffect(() => {
     if (isConnected) {
       getDatas();
-    }
-  }, [isConnected, address, contracts]);
-
-  useEffect(() => {
-    if (isConnected) {
-      getJobs();
     }
   }, [isConnected, address]);
 
@@ -89,18 +123,23 @@ export default function Job() {
       const isWorker = await contract.connect(address).isWorker();
       setIsClient(isClient);
       setIsWorker(isWorker);
-
+      getJuryPool();
+      getJobs();
+      console.log("Jurypool >>>", juryPool)
+      console.log("Jobs >>>", contracts)
   };
 
   const getJobs = async() => { 
-    
     const contract = new ethers.Contract(contractAddress, abi, provider)
-    let NumberContracts = await contract.connect(address).contractCounter()
+    let NumberContracts = await contract.contractCounter()
     NumberContracts = NumberContracts.toString();
     let contractsTab = []
     for (let i = 1; i <= NumberContracts; i++) {
-      let details = await contract.connect(address).contracts(i)
-      let price = details.price.toString() / 1000000000000000000
+      let details = await contract.contracts(i)
+      let price = Math.round(details.price.toString() / 1000000000000000000)
+      //rounded price 2 decimals after comma
+      
+
       let state = getContractStates(details.state)
       const date = new Date(details.createAt * 1000);
       const createAt = date.toLocaleDateString()
@@ -109,67 +148,105 @@ export default function Job() {
         worker : details.worker,
         id: i,
         hash: details.hashJob,
+        deadline: details.deadline.toString(),
         createAt : createAt,
         price : price,
         state: state,
-        // created_at: details.created_at,
-        deadline: details.deadline.toString(),
+        disputeId: details.disputeId.toString(),   
       }
-      contractsTab.push(thisContract)
+      // get dispute info if exists
+      if (thisContract.disputeId != "0") {
+        await getJuryPool()
+        let dispute = await contract.disputes(thisContract.disputeId)
+        // add element to thisContract
+        thisContract.totalVoteCount = dispute.totalVoteCount.toString()
+        thisContract.clientVoteCount = dispute.clientVoteCount.toString()
+        thisContract.workerVoteCount = dispute.workerVoteCount.toString()
+        thisContract.disputeInitiator = dispute.disputeInitiator
+         
+        const n = juryPool.length
+        let juryMembers = [[]]
+        let counter = 0
+        for (let i = 1; i < n; i++) {
+          let jury = juryPool[i]
+          if (jury == undefined) {
+            jury = "0x0000000000000000000000000000000000000000"
+          }
+          // check if is a jury in the dispute
+          let isJury = await contract.isJuryInDispute(thisContract.disputeId, jury)
+          if (isJury) {
+            let hasVoted = await contract.connect(signer).hasVoted(thisContract.disputeId, jury)
+            const juryAddress= jury.toString()
+            const bool = hasVoted.toString()
+            juryMembers[counter] = [
+              juryAddress,
+              bool,
+            ],
+            counter++
+            // console.log("Jury members >>>", juryMembers)
+          }
+        }
+        thisContract.juryMembers = juryMembers
+        contractsTab.push(thisContract)
+      } else {contractsTab.push(thisContract)}
   }
   setContracts(contractsTab)
-}
-
-const getContractStates = (expr) => {
-  switch (expr) {
-    case 0:
-      setColorState("gray.500")
-      return "Waiting for Worker"
-        break
-    case 1:
-      setColorState("green.500")
-      return "Work Started"
-        break
-    case 2:
-      setColorState("orange")
-      return "Waiting Client Review"
-      break
-    case 3:
-      setColorState("green.500")
-      return "Work Finished Successufully"
-      break
-    case 4:
-      setColorState("red.500")
-      return "Dispute Opened"
-        break  
-    case 5:
-      setColorState("red.500")
-      return "Client Lost Dispute"
-        break
-    case 6:
-      setColorState("red.500")
-      return "Worker Lost Dispute"
-      break     
-      case 7:
-        setColorState("blue.500")
-        return "Dispute Closed"  
-      break 
-      case 8:
-        setColorState("red.500")
-        return "Cancel By Freelancer"
-      break 
-      case 9:
-        setColorState("red.500")
-        return "Cancel By Client" 
-      break  
-      case 10:
-        setColorState("gray.500")
-        return "Archived"  
-      break    
-      default:
-      return null
+  console.log("CONTRACTS >>>", contractsTab)
   }
-}
+
+  
+  
+
+  const getContractStates = (expr) => {
+    switch (expr) {
+      case 0:
+        setColorState("gray.500")
+        return "Waiting for Worker"
+          break
+      case 1:
+        setColorState("green.500")
+        return "Work Started"
+          break
+      case 2:
+        setColorState("orange")
+        return "Waiting Client Review"
+        break
+      case 3:
+        setColorState("green.500")
+        return "Work Finished Successfully"
+        break
+      case 4:
+        setColorState("red.500")
+        return "Dispute Opened"
+          break  
+      case 5:
+        setColorState("red.500")
+        return "Client Lost Dispute"
+          break
+      case 6:
+        setColorState("red.500")
+        return "Worker Lost Dispute"
+        break     
+        case 7:
+          setColorState("blue.500")
+          return "Dispute Closed"  
+        break 
+        case 8:
+          setColorState("red.500")
+          return "Cancel By Freelancer"
+        break 
+        case 9:
+          setColorState("red.500")
+          return "Cancel By Client" 
+        break  
+        case 10:
+          setColorState("gray.500")
+          return "Archived"  
+        break    
+        default:
+        return null
+    }
+  }
 
  //The user wants to take a job
  const signContract = async(id) => {
@@ -293,15 +370,16 @@ const cancelJob = async(id) => {
 const openDispute = async(id) => {
   try {
     const contract = new ethers.Contract(contractAddress, abi, signer)
-    let transaction = await contract.openDispute(id)
+    // transaction with gasLimit and gasPrice
+    let transaction = await contract.openDispute(id, {gasLimit: 30000000, gasPrice: 1000000000})
     console.log(transaction)
     await transaction.wait(1)
-    getJobs()
     toast({
       title: 'Congratulations!',
       description: "You opened a dispute!",
       status: 'success',
     })
+    getJobs()
   }
   catch (e) {
     console.log("error", e.message )
@@ -312,6 +390,56 @@ const openDispute = async(id) => {
     })
   }
 }
+
+// The jury can vote
+
+const vote = async(id, vote) => {
+  try {
+    const contract = new ethers.Contract(contractAddress, abi, signer)
+    let transaction = await contract.vote(id, vote)
+    await transaction.wait(1)
+    toast({
+      title: 'Congratulations!',
+      description: "You voted!",
+      status: 'success',
+    })
+    getJobs()
+  }
+  catch (e) {
+    console.log("error", e.message )
+    toast({
+      title: 'Error',
+      description: "An error occured, please try again.",
+      status: 'error',
+    })
+  }
+}
+
+// withdraw funds
+
+const withdrawFunds = async(id) => {
+  try {
+    const contract = new ethers.Contract(contractAddress, abi, signer)
+    let transaction = await contract.pullPayment(id)
+    await transaction.wait(1)
+    toast({
+      title: 'Congratulations!',
+      description: "You withdrew your funds!",
+      status: 'success',
+    })
+    getJobs()
+  }
+  catch (e){
+    console.log("error", e.message )
+    toast({
+      title: 'Error',
+      description: "An error occured, please try again.",
+      status: 'error',
+    })
+  }
+}
+
+    
 
 
 
@@ -349,10 +477,9 @@ const openDispute = async(id) => {
                 {contracts.map((thisjob, index) => (
                   <Fragment key={index}>
                     <Grid
-                      templateRows={{ base: "auto auto", md: "auto" }}
-                      w="100%"
+                      templateRows={{ base: "auto auto", md: "auto auto" }}
                       templateColumns={{ base: "unset", md: "4fr 2fr 2fr" }}
-                      p={{ base: 2, sm: 4 }}
+                      p={{ base: 2 }}
                       gap={3}
                       alignItems="center"
                       _hover={{
@@ -392,7 +519,27 @@ const openDispute = async(id) => {
                         fontWeight="medium"
                         fontSize={{ base: "xs", sm: "sm" }}
                         color={useColorModeValue("gray.600", "gray.300")}
-                      ></HStack>
+                      >
+                        <Flex alignItems="center" direction="column">
+                        <chakra.p
+                          fontWeight="medium"
+                          fontSize="sm"
+                          color={useColorModeValue("gray.600", "gray.300")}
+                          mb={1}
+                        >
+                          Price
+                        </chakra.p>
+                      <Badge
+                          w="max-content"
+                          color={"#552DF1"}
+                          variant="outline"
+                          border={"2px solid #552DF1"}
+                          opacity="0.8"
+                        >
+                          {thisjob.price} ETH
+                        </Badge>
+                        </Flex>
+                      </HStack>
                         <Stack
                         spacing={2}
                         direction="row"
@@ -414,10 +561,32 @@ const openDispute = async(id) => {
                               onClick={() => cancelJob(thisjob.id)}>Cancel</Button>)
                             break;
                           case "Cancel By Client":
-                            return (<Text color="red">Job canceled by Client</Text>)
+                            return (
+                            <Stack>
+                              <Text color="red">Job cancel</Text>
+                              <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
                             break;
                           case "Cancel By Freelancer":
-                            return (<Text color="red">Job canceled by Freelancer</Text>)
+                            return (
+                            <Stack>
+                              <Text color="red">Freelancer quit</Text>
+                              <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
                             break;
                           case "Work Started":
                             return (
@@ -436,19 +605,23 @@ const openDispute = async(id) => {
                           case "Waiting Client Review":
                             return (<Button    
                               leftIcon={<AiOutlineArrowRight />}
-                              colorScheme="red"
+                              colorScheme="whatsapp"
                               color="white"
                               variant="solid"
                               size="sm"
                               rounded="md"
                               onClick={() => setIsDone(thisjob.id)}>Validate the job</Button>)
                             break;
-                          case "Work Finished":
+                          case "Work Finished Successfully":
                             return (
                             <Text color="green" > Job Done by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
                             break;
                           case "Dispute Opened":
-                            return (<Text color="red" > Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
+                            return (
+                            <Stack>
+                            <Text color="red" > Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
+                            </Stack>
+                            )
                             break;
                           case "Dispute Closed":
                             return (<Text > "Dispute Closed" </Text>)
@@ -461,10 +634,10 @@ const openDispute = async(id) => {
                             break;
                           default:
                             return (<Text > "default" {thisjob.state}  </Text>)
-                        }
-                      })()
-                      ) : (
-                        (() => {
+                        }})()
+                        ) : (
+                        address == thisjob.worker ? (
+                          (() => {
                           switch (thisjob.state) {
                             case "Waiting for Worker":
                             return (
@@ -515,22 +688,22 @@ const openDispute = async(id) => {
                             case "Waiting Client Review":
                             return (<Text color="orange" > Waiting for Client Review </Text>)
                             break;
-                            case "Work Finished":
+                            case "Work Finished Successfully":
                               return (
                                 <Stack alignContent={"left"}>
-                                  <Text color="green"> Job Done by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                  <Text fontWeight="bold" color="green" > Job Confirmed </Text>
                                   <Button    
-                                  leftIcon={<AiOutlineArrowRight />}
-                                  colorScheme="red"
-                                  color="white"
-                                  variant="solid"
-                                  size="sm"
-                                  rounded="md"
-                                  onClick={() => cancelJob(thisjob.id)}>Withdraw</Button>
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
                               </Stack>)
                               break;
                             case "Dispute Opened":
-                              return (<Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
+                              return (<Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>)
                               break;
                             case "Dispute Closed":
                               return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
@@ -543,15 +716,105 @@ const openDispute = async(id) => {
                               break;
                             default:
                               return (<Text > "default" {thisjob.state} </Text>)
-                          }
-                        })()
-                     
-                     
-                     
-                     
-                     
-                     
-                     
+                          }})()
+                        ) : (      
+                        (() => {
+                          switch (thisjob.state) {
+                            case "Waiting for Worker":
+                            return (
+                            <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              Variant="outline"
+                              colorScheme="green"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => signContract(thisjob.id)}>Take the offer</Button>)
+                            break;
+                            case "Cancel By Client":
+                              return (<Text color="red">Job canceled by Client</Text>)
+                              break;
+                            case "Cancel By Freelancer":
+                              return (<Text color="red">Job canceled by Freelancer</Text>)
+                              break;
+                            case "Work Started":
+                              return (
+                                <Stack alignContent={"flex-end"}>
+                                  <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                </Stack>
+                                )
+                              break;
+                            case "Waiting Client Review":
+                            return (
+                              <Stack alignContent={"flex-end"}>
+                                <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                              </Stack>
+                              )
+                            break;
+                            case "Work Finished Successfully":
+                              return (
+                                <Stack alignContent={"flex-end"}>
+                                  <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                </Stack>
+                                )
+                              break;
+                            case "Dispute Opened":
+                              return(
+                                <Stack alignContent={"center"}>
+                                  {thisjob.juryMembers.map((jury, index) => (
+                                      address == jury[0] ? 
+                                      ( 
+                                        jury[1] == true ? (
+                                                <Stack alignContent={"center"}>
+                                                   <Text fontWeight="bold" color="blue"> You've voted {jury[1]}</Text>
+                                                </Stack>
+                                               ) : (
+                                                <Stack alignContent={"center"}>
+                                                <Text fontWeight="bold" color="blue"> Vote for dispute</Text>
+                                                <Button
+                                                leftIcon={<AiOutlineArrowRight />}
+                                                colorScheme="blue"
+                                                variant="solid"
+                                                size="sm"
+                                                rounded="md"
+                                                onClick={() => vote(thisjob.id, true)}>Vote for Client</Button>
+                                                <Button
+                                                leftIcon={<AiOutlineArrowRight />}
+                                                colorScheme="blue"
+                                                variant="outline"
+                                                size="sm"
+                                                rounded="md"
+                                                onClick={() => vote(thisjob.id, false)}>Vote for Worker</Button>
+                                                </Stack>
+                                               )
+                  
+                                        ) : (
+                                        <Text fontWeight="bold" color="orange"> Dispute Ongoing </Text>
+                                        )
+                                  ))}
+
+                                  
+                                  {/* {thisjob.juryMembers.map((jury, index) => (
+                                    <>
+                                    <Text fontWeight="bold" color="blue"> address : {jury[0]} </Text>
+                                    <Text fontWeight="bold" color="blue"> hasVoted : {jury[1]} </Text>
+                                    </>
+                                  ))} */}
+                                </Stack>
+                              )
+                              break;
+                            case "Dispute Closed":
+                              return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
+                              break;
+                            case "Payment Done":
+                              return (<Text fontWeight="bold" color="green" > "Payment Done" </Text>)
+                              break;
+                            case "Archived":
+                                return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                              break;
+                            default:
+                              return (<Text > "default" {thisjob.state} </Text>)
+                          }})()
+                        )
                      ))}
       
 

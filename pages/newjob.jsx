@@ -39,8 +39,17 @@ const newJob = () => {
   const [isWorker, setIsWorker] = useState(false);
   const [isJury, setIsJury] = useState(false);
 
-  //CHAKRA-UI
-  const toast = useToast();
+   //CHAKRA-UI
+   const toast = useToast({
+    duration: 5000,
+    isClosable: true,
+    position: "top",
+    containerStyle: {
+      width: "500px",
+      maxWidth: "80%",
+    },
+  });
+
 
   //STATES
   const [title, setTitle] = useState("");
