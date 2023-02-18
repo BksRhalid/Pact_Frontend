@@ -67,6 +67,7 @@ export default function Home() {
 
   const getDatas = async () => {
     if (isConnected) {
+      console.log("contract address", contractAddress);
       const contract = new ethers.Contract(contractAddress, abi, provider);
       const _isClient = await contract.connect(address).isClient();
       const _isWorker = await contract.connect(address).isWorker();
