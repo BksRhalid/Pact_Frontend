@@ -370,7 +370,7 @@ const openDispute = async(id) => {
   try {
     const contract = new ethers.Contract(contractAddress, abi, signer)
     // transaction with gasLimit and gasPrice
-    let transaction = await contract.openDispute(id, {gasLimit: 30000000, gasPrice: 1000000000})
+    let transaction = await contract.openDispute(id, {gasLimit: 30000000})
     console.log(transaction)
     await transaction.wait(1)
     toast({
