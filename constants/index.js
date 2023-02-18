@@ -3,7 +3,6 @@
 // export const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
 
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-console.log("contract address", contractAddress);
 export const abi = [
   {
     inputs: [],

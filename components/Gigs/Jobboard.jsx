@@ -136,9 +136,8 @@ export default function Job() {
     let contractsTab = []
     for (let i = 1; i <= NumberContracts; i++) {
       let details = await contract.contracts(i)
-      let price = Math.round(details.price.toString() / 1000000000000000000)
+      let price = (details.price.toString() / 1000000000000000000).toFixed(4)
       //rounded price 2 decimals after comma
-      
 
       let state = getContractStates(details.state)
       const date = new Date(details.createAt * 1000);
