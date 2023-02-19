@@ -1,33 +1,29 @@
-import Head from "next/head";
 import React from "react";
 import { useState, useEffect, Fragment } from "react";
 import {
   Flex,
-  Container,
-  Box,
+
   FormLabel,
   FormControl,
   Input,
   Stack,
   Button,
-  Heading,
   VStack,
   Text,
   useColorModeValue,
   useToast,
   Textarea,
-  Grid,
-  Spacer,
-  Icon,
   Select,
   Link,
+  Alert,
 } from "@chakra-ui/react";
 import { useAccount, useProvider, useSigner } from "wagmi";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import { abi, contractAddress } from "@/constants";
 import { MdAdd } from "react-icons/md";
-import { delay } from "framer-motion";
+import { addTodo } from "@/pages/api/todo";
+
 
 const newJob = () => {
   //WAGMI
@@ -97,6 +93,13 @@ const newJob = () => {
         gasLimit: 1000000,
       });
       await transaction.wait(1);
+      // send hash + title + description to firebase
+      const todo = {
+        jobHash: jobHash,
+        title,
+        description,
+        };
+      await addTodo(todo);
       toast({
         title: "Congratulations!",
         description: "You have created a Job!",
@@ -104,6 +107,7 @@ const newJob = () => {
         duration: 5000,
         isClosable: true,
       });
+
     } catch (error) {
       toast({
         title: "Error",
@@ -249,7 +253,7 @@ const newJob = () => {
                 fontWeight="bold"
                 color={useColorModeValue("gray.700", "white")}
               >
-                Wallet
+                You're not registered as a client
               </Text>
               <Link href="/settings">
                         <Button
@@ -264,8 +268,23 @@ const newJob = () => {
           </VStack>
           )
       ) : (
-        <VStack>
-          <Text> PLEASE CONNECT </Text>
+            <VStack
+            as="form"
+            spacing={4}
+            w={{ base: "100%", md: "100%" }}
+            bg={useColorModeValue("white", "gray.700")}
+            rounded="lg"
+            boxShadow="lg"
+            p={{ base: 5 }}
+            m={{ base: 5 }}
+          >
+              <Flex justify={"center"} alignItems="center" justifyContent="center">
+                <Alert status="info" rounded="lg"  >
+                  <Flex direction="column">
+                    <Text fontWeight={"bold"}>Please connect to your Web3 account first</Text> <br />
+                  </Flex>
+                </Alert>
+            </Flex>
         </VStack>
         )}
       </Flex>

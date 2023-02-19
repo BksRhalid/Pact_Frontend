@@ -26,112 +26,6 @@ export const abi = [
     inputs: [
       {
         indexed: false,
-        internalType: "uint256",
-        name: "contractId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "client",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "worker",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "bytes32",
-        name: "hashJob",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "createAt",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "deadline",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "price",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "enum freelanceContract.ContractState",
-        name: "state",
-        type: "uint8",
-      },
-    ],
-    name: "ContractCreated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "contractId",
-        type: "uint256",
-      },
-    ],
-    name: "ContractIsFinished",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "contractId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "worker",
-        type: "address",
-      },
-    ],
-    name: "ContractReviewRequested",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "contractId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "worker",
-        type: "address",
-      },
-    ],
-    name: "ContractSigned",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
         internalType: "enum freelanceContract.ContractState",
         name: "previousStatus",
         type: "uint8",
@@ -144,50 +38,6 @@ export const abi = [
       },
     ],
     name: "ContractStateChange",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "disputeId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "contractId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "disputeInitiator",
-        type: "address",
-      },
-    ],
-    name: "DisputeCreated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "enum freelanceContract.DisputeState",
-        name: "previousStatus",
-        type: "uint8",
-      },
-      {
-        indexed: false,
-        internalType: "enum freelanceContract.DisputeState",
-        name: "newStatus",
-        type: "uint8",
-      },
-    ],
-    name: "DisputeStateChange",
     type: "event",
   },
   {
@@ -424,25 +274,6 @@ export const abi = [
         type: "uint256",
       },
     ],
-    name: "disputeStates",
-    outputs: [
-      {
-        internalType: "enum freelanceContract.DisputeState",
-        name: "",
-        type: "uint8",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
     name: "disputes",
     outputs: [
       {
@@ -474,11 +305,6 @@ export const abi = [
         internalType: "address",
         name: "disputeInitiator",
         type: "address",
-      },
-      {
-        internalType: "enum freelanceContract.DisputeState",
-        name: "state",
-        type: "uint8",
       },
     ],
     stateMutability: "view",
@@ -771,6 +597,27 @@ export const abi = [
   },
   {
     inputs: [],
+    name: "removeClient",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "removeJury",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "removeWorker",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "renounceOwnership",
     outputs: [],
     stateMutability: "nonpayable",
@@ -793,7 +640,7 @@ export const abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_disputeId",
+        name: "_contractId",
         type: "uint256",
       },
     ],
@@ -897,7 +744,7 @@ export const abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_disputeId",
+        name: "_contractId",
         type: "uint256",
       },
       {
