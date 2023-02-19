@@ -194,6 +194,25 @@ export const abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: false,
         internalType: "uint256",
         name: "disputeId",
@@ -348,14 +367,14 @@ export const abi = [
         type: "uint256",
       },
       {
-        internalType: "enum freelanceContract.ContractState",
-        name: "state",
-        type: "uint8",
-      },
-      {
         internalType: "uint256",
         name: "disputeId",
         type: "uint256",
+      },
+      {
+        internalType: "enum freelanceContract.ContractState",
+        name: "state",
+        type: "uint8",
       },
     ],
     stateMutability: "view",
@@ -694,6 +713,19 @@ export const abi = [
   },
   {
     inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "protocolFee",
     outputs: [
       {
@@ -735,6 +767,13 @@ export const abi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -792,12 +831,64 @@ export const abi = [
   {
     inputs: [
       {
+        internalType: "uint8",
+        name: "_juryFee",
+        type: "uint8",
+      },
+    ],
+    name: "setJuryFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "_juryLength",
+        type: "uint8",
+      },
+    ],
+    name: "setJuryLength",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "_protocolFee",
+        type: "uint8",
+      },
+    ],
+    name: "setProtocolFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "_contractId",
         type: "uint256",
       },
     ],
     name: "signContract",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
