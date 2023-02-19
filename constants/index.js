@@ -1,11 +1,23 @@
-// import Contract from "../../backend/artifacts/contracts/Gigs.sol/Gigs";
-
-// export const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
-
 export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 export const abi = [
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: "uint8",
+        name: "_protocolFee",
+        type: "uint8",
+      },
+      {
+        internalType: "uint8",
+        name: "_juryFee",
+        type: "uint8",
+      },
+      {
+        internalType: "uint24",
+        name: "_juryLength",
+        type: "uint24",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "constructor",
   },
@@ -425,19 +437,19 @@ export const abi = [
         type: "uint256",
       },
       {
-        internalType: "uint256",
+        internalType: "uint24",
         name: "totalVoteCount",
-        type: "uint256",
+        type: "uint24",
       },
       {
-        internalType: "uint256",
+        internalType: "uint24",
         name: "clientVoteCount",
-        type: "uint256",
+        type: "uint24",
       },
       {
-        internalType: "uint256",
+        internalType: "uint24",
         name: "workerVoteCount",
-        type: "uint256",
+        type: "uint24",
       },
       {
         internalType: "address",
@@ -504,6 +516,25 @@ export const abi = [
         name: "_disputeId",
         type: "uint256",
       },
+    ],
+    name: "getJuryMembers",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_disputeId",
+        type: "uint256",
+      },
       {
         internalType: "address",
         name: "_juryAddress",
@@ -524,6 +555,25 @@ export const abi = [
   {
     inputs: [],
     name: "isClient",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_address",
+        type: "address",
+      },
+    ],
+    name: "isJury",
     outputs: [
       {
         internalType: "bool",
@@ -696,6 +746,32 @@ export const abi = [
       },
     ],
     name: "requestClientValidation",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_disputeId",
+        type: "uint256",
+      },
+    ],
+    name: "revealState",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_contractId",
+        type: "uint256",
+      },
+    ],
+    name: "selectJuryMember",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

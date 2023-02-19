@@ -59,15 +59,14 @@ export default function Job() {
         maxWidth: "80%",
       },
     });    
-    const textColorPrimary = useColorModeValue("gray.700", "white");
     const [colorState, setColorState] = useState("gray.700")
 
     
     //STATE
     const [isClient, setIsClient] = useState(false);
     const [isWorker, setIsWorker] = useState(false);
+    const [isJury, setIsJury] = useState(false);
     const [contracts, setContracts] = useState([])
-    const [contractState, setContractState] = useState("")
     const [blockNumber, setBlockNumber] = useState(0)
     const [juryPool, setJuryPool] = useState([])
     const [juryCounter, setJuryCounter] = useState(0)
@@ -75,6 +74,7 @@ export default function Job() {
 
     // get block number
     const getBlockNumber = async () => {
+      try {
       const prevblock = blockNumber || 0;
       const block = await provider.getBlockNumber();
       setBlockNumber(block);
@@ -83,10 +83,14 @@ export default function Job() {
         getJuryPool();
         getJobs();
       }
+    } catch (error) {
+      console.log(error)
+    };
     };
 
     // get jury pool
     const getJuryPool = async () => {
+      try {
       const contract = new ethers.Contract(contractAddress, abi, provider);
       const juryCounter = await contract.juryCounter();
       const Pool = [];
@@ -95,21 +99,25 @@ export default function Job() {
         Pool.push(jury);
       }
       setJuryPool(Pool);
+    } catch (error) {
+      console.log(error)
+    };
     };
 
-  // hooks
-  useEffect(() => {
-      const interval = setInterval(() => {
-        getBlockNumber();
-      }, 1000);
-      return () => clearInterval(interval);
-    }, [blockNumber]);
+
+  // // hooks
+  // useEffect(() => {
+  //     const interval = setInterval(() => {
+  //       getBlockNumber();
+  //     }, 1000);
+  //     return () => clearInterval(interval);
+  //   }, [blockNumber]);
 
   useEffect(() => { 
     if (isConnected) {
       getJobs();
     }
-  }, []);
+  }, [contracts]);
 
   useEffect(() => {
     if (isConnected) {
@@ -118,15 +126,15 @@ export default function Job() {
   }, [isConnected, address]);
 
   const getDatas = async () => {
-      const contract = new ethers.Contract(contractAddress, abi, provider);
-      const isClient = await contract.connect(address).isClient()
+      const contract = new ethers.Contract(contractAddress, abi, provider);      
+      const isClient = await contract.connect(address).isClient();
       const isWorker = await contract.connect(address).isWorker();
+      const isJury = await contract.connect(provider).isJury(address);
       setIsClient(isClient);
       setIsWorker(isWorker);
-      getJuryPool();
-      getJobs();
-      console.log("Jurypool >>>", juryPool)
-      console.log("Jobs >>>", contracts)
+      await getJuryPool();
+      await getJobs();
+
   };
 
   const getJobs = async() => { 
@@ -157,33 +165,23 @@ export default function Job() {
       if (thisContract.disputeId != "0") {
         await getJuryPool()
         let dispute = await contract.disputes(thisContract.disputeId)
+        let jurors = await contract.getJuryMembers(thisContract.disputeId)
         // add element to thisContract
         thisContract.totalVoteCount = dispute.totalVoteCount.toString()
         thisContract.clientVoteCount = dispute.clientVoteCount.toString()
         thisContract.workerVoteCount = dispute.workerVoteCount.toString()
         thisContract.disputeInitiator = dispute.disputeInitiator
-         
-        const n = juryPool.length
-        let juryMembers = [[]]
-        let counter = 0
-        for (let i = 1; i < n; i++) {
-          let jury = juryPool[i]
-          if (jury == undefined) {
-            jury = "0x0000000000000000000000000000000000000000"
-          }
-          // check if is a jury in the dispute
-          let isJury = await contract.isJuryInDispute(thisContract.disputeId, jury)
-          if (isJury) {
-            let hasVoted = await contract.connect(signer).hasVoted(thisContract.disputeId, jury)
-            const juryAddress= jury.toString()
-            const bool = hasVoted.toString()
-            juryMembers[counter] = [
-              juryAddress,
-              bool,
-            ],
-            counter++
-            // console.log("Jury members >>>", juryMembers)
-          }
+
+        // get jury members
+        let juryMembers = []
+        for (let i = 0; i < jurors.length; i++) {
+          let hasVoted = await contract.hasVoted(thisContract.disputeId, jurors[i])
+          const juryAddress= jurors[i].toString()
+          const bool = hasVoted.toString()
+          juryMembers[i] = [
+            juryAddress,
+            bool,
+          ]
         }
         thisContract.juryMembers = juryMembers
         contractsTab.push(thisContract)
@@ -192,9 +190,6 @@ export default function Job() {
   setContracts(contractsTab)
   console.log("CONTRACTS >>>", contractsTab)
   }
-
-  
-  
 
   const getContractStates = (expr) => {
     switch (expr) {
@@ -217,7 +212,10 @@ export default function Job() {
       case 4:
         setColorState("red.500")
         return "Dispute Opened"
-          break  
+          break 
+      case 5:
+          setColorState("red.500")
+          return "Waiting for Jury Vote" 
       case 5:
         setColorState("red.500")
         return "Client Lost Dispute"
@@ -370,7 +368,7 @@ const openDispute = async(id) => {
   try {
     const contract = new ethers.Contract(contractAddress, abi, signer)
     // transaction with gasLimit and gasPrice
-    let transaction = await contract.openDispute(id, {gasLimit: 30000000})
+    let transaction = await contract.openDispute(id)
     console.log(transaction)
     await transaction.wait(1)
     toast({
@@ -389,6 +387,31 @@ const openDispute = async(id) => {
     })
   }
 }
+
+// jury selection 
+
+const jurySelection = async(id) => {
+  try {
+    const contract = new ethers.Contract(contractAddress, abi, signer)
+    let transaction = await contract.selectJuryMember(id, {gasLimit: 30000000})
+    await transaction.wait(1)
+    toast({
+      title: 'Congratulations!',
+      description: "You selected the jury!",
+      status: 'success',
+    })
+    getJobs()
+  }
+  catch (e) {
+    console.log("error", e.message )
+    toast({
+      title: 'Error',
+      description: "An error occured, please try again.",
+      status: 'error',
+    })
+  }
+}
+
 
 // The jury can vote
 
@@ -437,11 +460,6 @@ const withdrawFunds = async(id) => {
     })
   }
 }
-
-    
-
-
-
   return (
       <VStack
         as="form"
@@ -616,10 +634,26 @@ const withdrawFunds = async(id) => {
                             <Text color="green" > Job Done by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
                             break;
                           case "Dispute Opened":
+                              return (
+                                <Stack alignContent={"left"}>
+                                    <Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
+                               { address == thisjob.disputeInitiator ? (
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => jurySelection(thisjob.id)}>Launch Jury Selection</Button>
+                              ) : ( null )}
+                              </Stack>)
+                              break;
+                          case "Waiting for Jury Vote":
                             return (
-                            <Stack>
-                            <Text color="red" > Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
-                            </Stack>
+                              <Stack alignContent={"center"}>
+                                <Text fontWeight="bold" color="orange"> Waiting for Jury Vote </Text>
+                              </Stack>
                             )
                             break;
                           case "Dispute Closed":
@@ -702,7 +736,27 @@ const withdrawFunds = async(id) => {
                               </Stack>)
                               break;
                             case "Dispute Opened":
-                              return (<Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>)
+                              return (
+                                <Stack alignContent={"left"}>
+                                    <Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
+                               { address == thisjob.disputeInitiator ? (
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => jurySelection(thisjob.id)}>Launch Jury Selection</Button>
+                              ) : ( null )}
+                              </Stack>)
+                              break;
+                            case "Waiting for Jury Vote":
+                              return (
+                                <Stack alignContent={"center"}>
+                                  <Text fontWeight="bold" color="orange"> Waiting for Jury Vote </Text>
+                                </Stack>
+                              )
                               break;
                             case "Dispute Closed":
                               return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
@@ -759,16 +813,23 @@ const withdrawFunds = async(id) => {
                             case "Dispute Opened":
                               return(
                                 <Stack alignContent={"center"}>
+                                    <Text fontWeight="bold" color="orange"> Dispute Requested </Text>
+                                </Stack>
+                              )
+                              break;
+                            case "Waiting for Jury Vote":
+                              return (
+                                <Stack alignContent={"center"}>
+                                  <Text fontWeight="bold" color="orange"> Dispute Ongoing </Text>
                                   {thisjob.juryMembers.map((jury, index) => (
                                       address == jury[0] ? 
-                                      ( 
+                                      (                    
                                         jury[1] == true ? (
                                                 <Stack alignContent={"center"}>
                                                    <Text fontWeight="bold" color="blue"> You've voted {jury[1]}</Text>
                                                 </Stack>
                                                ) : (
                                                 <Stack alignContent={"center"}>
-                                                <Text fontWeight="bold" color="blue"> Vote for dispute</Text>
                                                 <Button
                                                 leftIcon={<AiOutlineArrowRight />}
                                                 colorScheme="blue"
@@ -784,20 +845,9 @@ const withdrawFunds = async(id) => {
                                                 rounded="md"
                                                 onClick={() => vote(thisjob.id, false)}>Vote for Worker</Button>
                                                 </Stack>
-                                               )
-                  
-                                        ) : (
-                                        <Text fontWeight="bold" color="orange"> Dispute Ongoing </Text>
-                                        )
+                                               )                 
+                                        ) : (null)
                                   ))}
-
-                                  
-                                  {/* {thisjob.juryMembers.map((jury, index) => (
-                                    <>
-                                    <Text fontWeight="bold" color="blue"> address : {jury[0]} </Text>
-                                    <Text fontWeight="bold" color="blue"> hasVoted : {jury[1]} </Text>
-                                    </>
-                                  ))} */}
                                 </Stack>
                               )
                               break;

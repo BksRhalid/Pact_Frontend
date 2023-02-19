@@ -1,11 +1,9 @@
 import Head from "next/head";
 import Image from "next/image";
 import React from "react";
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 
 // Here we have used react-icons package for the icons
-import { IconType } from "react-icons";
-import { FaRegComment, FaRegHeart, FaRegEye } from "react-icons/fa";
 import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
 import { RiArrowRightSLine } from "react-icons/ri";
 
@@ -13,30 +11,16 @@ import {
   Flex,
   Text,
   useToast,
-  Grid,
   useColorModeValue,
-  Box,
   chakra,
   Link,
   VStack,
-  HStack,
   Icon,
-  Divider,
-  Stack,
-  Badge,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Card,
-  CardBody,
-  CardHeader,
   Button,
 } from "@chakra-ui/react";
 
 import { abi, contractAddress } from "@/constants";
-import { useAccount, useBalance, useProvider, useSigner } from "wagmi";
+import { useAccount, useProvider } from "wagmi";
 import { ethers } from "ethers";
 import Jobboard from "@/components/Gigs/Jobboard";
 
@@ -52,7 +36,6 @@ export default function Home() {
     duration: 5000,
     isClosable: true,
     position: "top",
-    title: "Container style is updated",
     containerStyle: {
       width: "500px",
       maxWidth: "80%",
@@ -66,13 +49,19 @@ export default function Home() {
   });
 
   const getDatas = async () => {
-    if (isConnected) {
-      console.log("contract address", contractAddress);
+    if (isConnected && address && provider) {
       const contract = new ethers.Contract(contractAddress, abi, provider);
+      console.log("address", address);
+      console.log("contract", contract);
       const _isClient = await contract.connect(address).isClient();
       const _isWorker = await contract.connect(address).isWorker();
+      const _isJury = await contract.isJury(address);
+      console.log("isClient", _isClient);
+      console.log("isWorker", _isWorker);
+      console.log("isJury", _isJury);
       setIsClient(_isClient);
       setIsWorker(_isWorker);
+      setIsJury(_isJury);
     }
   };
 

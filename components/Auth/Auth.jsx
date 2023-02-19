@@ -11,12 +11,11 @@ import {
     Show,
   } from "@chakra-ui/react";
 import { GoogleAuthProvider } from "firebase/auth";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { MoonIcon , SunIcon, AddIcon } from "@chakra-ui/icons";
 import { auth } from "../../firebase";
 import useAuth from "../../hooks/useAuth";
 import { useAccount, useProvider } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { AddIcon } from "@chakra-ui/icons";
 import { abi, contractAddress } from "@/constants";
 import { ethers } from "ethers";
 
@@ -174,7 +173,7 @@ return (
                 <ConnectButton chainStatus="none" label="Connexion" showBalance={false}/>
                 </Flex>
                 <Button onClick={() => toggleColorMode()}>
-                   {colorMode == "dark" ? <FaSun /> : <FaMoon />}
+                   {colorMode == "dark" ? <SunIcon /> : <MoonIcon />}
                </Button>{" "}
             </HStack>
         )}
@@ -184,7 +183,7 @@ return (
                 <ConnectButton chainStatus="none" label="Connexion" showBalance={false}/>
                 </Flex>
                 <Button onClick={() => toggleColorMode()}>
-                   {colorMode == "dark" ? <FaSun /> : <FaMoon />}
+                   {colorMode == "dark" ? <SunIcon /> : <MoonIcon />}
                </Button>{" "}
             </HStack>
         )}
@@ -198,7 +197,7 @@ export default Auth;
 
 //       <Box position={"fixed"} top="5%" right="5%">
 //       <Button onClick={() => toggleColorMode()}>
-//           {colorMode == "dark" ? <FaSun /> : <FaMoon />}
+//           {colorMode == "dark" ? <SunIcon /> : <MoonIcon />}
 //       </Button>{" "}
 //       {isLoggedIn && (
 //       <>

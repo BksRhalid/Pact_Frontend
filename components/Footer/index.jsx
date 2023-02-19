@@ -13,12 +13,10 @@ import {
     VisuallyHidden,
     Flex,
     VStack,
-    Button,
-    HStack,
-    Spacer,
   } from '@chakra-ui/react';
   import { FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa';
-  import { FaMoon, FaSun } from "react-icons/fa";
+  import { MoonIcon , SunIcon } from "@chakra-ui/icons";
+
 
   
   const Logo = () => {
@@ -98,7 +96,7 @@ import {
             </SocialButton>
           </Stack>
           {/* <Button onClick={() => toggleColorMode()}>
-            {colorMode == "dark" ? <FaSun /> : <FaMoon />}
+            {colorMode == "dark" ? <SunIcon /> : <MoonIcon />}
            </Button>{" "} */}
       </Flex>
     );

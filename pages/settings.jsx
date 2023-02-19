@@ -73,11 +73,20 @@ const Settings = () => {
   }, [isConnected, address]);
 
   const getDatas = async () => {
+    if (isConnected && address && provider) {
       const contract = new ethers.Contract(contractAddress, abi, provider);
-      const isClient = await contract.connect(address).isClient()
-      const isWorker = await contract.connect(address).isWorker();;
-      setIsClient(isClient);
-      setIsWorker(isWorker);
+      console.log("address", address);
+      console.log("contract", contract);
+      const _isClient = await contract.connect(address).isClient();
+      const _isWorker = await contract.connect(address).isWorker();
+      const _isJury = await contract.isJury(address);
+      console.log("isClient", _isClient);
+      console.log("isWorker", _isWorker);
+      console.log("isJury", _isJury);
+      setIsClient(_isClient);
+      setIsWorker(_isWorker);
+      setIsJury(_isJury);
+    }
   };
 
   const onChange = (e) => {
