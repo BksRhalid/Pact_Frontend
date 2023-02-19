@@ -5,12 +5,10 @@ import logo from "../public/img/pactLogo.png";
 
 import {
   IconButton,
-  Avatar,
   Box,
   CloseButton,
   Flex,
   HStack,
-  VStack,
   Icon,
   useColorModeValue,
   Link,
@@ -18,39 +16,16 @@ import {
   DrawerContent,
   Text,
   useDisclosure,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-  Button,
   useColorMode,
-  Show,
   Spacer,
 } from "@chakra-ui/react";
-import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
-  FiMenu,
-  FiBell,
-  FiChevronDown,
-  FiList,
-} from "react-icons/fi";
-import { FaGoogle, FaMoon, FaSun } from "react-icons/fa";
-import { IconType } from "react-icons";
-import { ReactText } from "react";
-import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
+import { FiHome, FiCompass, FiSettings, FiMenu, FiList } from "react-icons/fi";
 import Footer from "@/components/Footer";
 import Auth from "@/components/Auth/Auth";
 
 const LinkItems = ([] = [
   { name: "Dashboard", icon: FiHome, src: "/" },
   { name: "Jobs", icon: FiList, src: "/jobs" },
-  { name: "Freelance", icon: FiCompass, src: "/freelance" },
-  // { name: "Wallet", icon: FiStar, src: "/wallet" },
   { name: "Settings", icon: FiSettings, src: "/settings" },
 ]);
 

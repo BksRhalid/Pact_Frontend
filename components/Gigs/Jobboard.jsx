@@ -464,7 +464,7 @@ const withdrawFunds = async(id) => {
       <VStack
         as="form"
         spacing={4}
-        w={{ base: "100%", md: "70%" }}
+        w={{ base: "100%", md: "100%" }}
         bg={useColorModeValue("white", "gray.700")}
         rounded="lg"
         boxShadow="lg"
@@ -476,7 +476,8 @@ const withdrawFunds = async(id) => {
             Job Board Overview
           </chakra.h3>
         </Flex>
-        <VStack
+        { address ? 
+        (<VStack
           border="1px solid"
           borderColor="gray.400"
           rounded="md"
@@ -487,7 +488,8 @@ const withdrawFunds = async(id) => {
             <TabList>
               <Tab>All Jobs</Tab>
               <Tab>In progress</Tab>
-              <Tab>Completed</Tab>
+              <Tab>Waiting Review</Tab>
+              <Tab>Dispute</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
@@ -865,92 +867,1167 @@ const withdrawFunds = async(id) => {
                           }})()
                         )
                      ))}
-      
-
                       </Stack>
                     </Grid>
                     {contracts.length - 1 !== index && <Divider m={0} />}
                   </Fragment>
                 ))}
               </TabPanel>
-              {/* <TabPanel>
-                {contracts.map(
-                  (thisjob, index) =>
-                    thisjob.state == "in progress" && (
-                      <Fragment key={index}>
-                        <Grid
-                          templateRows={{ base: "auto auto", md: "auto" }}
-                          w="100%"
-                          templateColumns={{
-                            base: "unset",
-                            md: "4fr 2fr 2fr",
-                          }}
-                          p={{ base: 2, sm: 4 }}
-                          gap={3}
-                          alignItems="center"
-                          _hover={{
-                            bg: useColorModeValue("gray.200", "gray.700"),
-                          }}
+              <TabPanel>
+                {contracts.map((thisjob, index) => (
+                  thisjob.state == "Work Started" && (
+                  <Fragment key={index}>
+                    <Grid
+                      templateRows={{ base: "auto auto", md: "auto auto" }}
+                      templateColumns={{ base: "unset", md: "4fr 2fr 2fr" }}
+                      p={{ base: 2 }}
+                      gap={3}
+                      alignItems="center"
+                      _hover={{
+                        bg: useColorModeValue("gray.200", "gray.700"),
+                      }}
+                    >
+                      <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
+                        <chakra.h3
+                          as={Link}
+                          href={`/thisjob.id`}
+                          isExternal
+                          fontWeight="bold"
+                          fontSize="lg"
                         >
-                          <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
-                            <chakra.h3
-                              as={Link}
-                              href={thisjob.link}
-                              isExternal
-                              fontWeight="bold"
-                              fontSize="lg"
-                            >
-                              {thisjob.title}
-                            </chakra.h3>
-                            <chakra.p
-                              fontWeight="medium"
-                              fontSize="sm"
-                              color={useColorModeValue("gray.600", "gray.300")}
-                            >
-                              Published: {thisjob.createAt}
-                            </chakra.p>
-                            <Badge
-                              w="max-content"
-                              textColor={useColorModeValue("white", "gray.500")}
-                              opacity="0.8"
-                              bg={
-                                thisjob.state == "in progress"
-                                  ? "yellow.500"
-                                  : thisjob.state == "completed"
-                                  ? "green.500"
-                                  : "gray.500"
-                              }
-                            >
-                              {thisjob.state}
-                            </Badge>
-                          </Box>
-                          <HStack
-                            spacing={{ base: 0, sm: 3 }}
-                            alignItems="center"
-                            fontWeight="medium"
-                            fontSize={{ base: "xs", sm: "sm" }}
-                            color={useColorModeValue("gray.600", "gray.300")}
-                          ></HStack>
-                          <Stack
-                            spacing={2}
-                            direction="row"
-                            fontSize={{ base: "sm", sm: "md" }}
-                            justifySelf="flex-end"
-                            alignItems="center"
-                          >
-                            {["Take", "Cancel"].map((label, index) => (
-                              <JobSettingLink key={index} label={label} />
-                            ))}
-                          </Stack>
-                        </Grid>
-                        {contracts.length - 1 !== index && <Divider m={0} />}
-                      </Fragment>
-                    )
-                )}
-              </TabPanel>*/}
+                          <Text as="span" fontWeight="bold">Author : </Text>{thisjob.client.substring(0, 5)}...{thisjob.client.substring(thisjob.client.length - 4)}
+                          {/* {thisjob.hash.substring(0, 20) + "..."} */}
+                        </chakra.h3>
+                        <chakra.p
+                          fontWeight="medium"
+                          fontSize="sm"
+                          color={useColorModeValue("gray.600", "gray.300")}
+                        >
+                          Published: {thisjob.createAt}
+                        </chakra.p>
+                        <Badge
+                          w="max-content"
+                          textColor={useColorModeValue("white", "gray.500")}
+                          opacity="0.8"
+                          bg={colorState}
+                        >
+                          {thisjob.state}
+                        </Badge>
+                      </Box>
+                      <HStack
+                        spacing={{ base: 0, sm: 3 }}
+                        alignItems="center"
+                        fontWeight="medium"
+                        fontSize={{ base: "xs", sm: "sm" }}
+                        color={useColorModeValue("gray.600", "gray.300")}
+                      >
+                        <Flex alignItems="center" direction="column">
+                        <chakra.p
+                          fontWeight="medium"
+                          fontSize="sm"
+                          color={useColorModeValue("gray.600", "gray.300")}
+                          mb={1}
+                        >
+                          Price
+                        </chakra.p>
+                      <Badge
+                          w="max-content"
+                          color={"#552DF1"}
+                          variant="outline"
+                          border={"2px solid #552DF1"}
+                          opacity="0.8"
+                        >
+                          {thisjob.price} ETH
+                        </Badge>
+                        </Flex>
+                      </HStack>
+                        <Stack
+                        spacing={2}
+                        direction="row"
+                        fontSize={{ base: "sm", sm: "md" }}
+                        justifySelf="flex-end"
+                        alignItems="center"
+                      > 
+                      {(address == thisjob.client ? (
+                        (() => {
+                        switch (thisjob.state) {
+                          case "Waiting for Worker":
+                            return (  <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              colorScheme="red"
+                              color="white"
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => cancelJob(thisjob.id)}>Cancel</Button>)
+                            break;
+                          case "Cancel By Client":
+                            return (
+                            <Stack>
+                              <Text color="red">Job cancel</Text>
+                              <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                            break;
+                          case "Cancel By Freelancer":
+                            return (
+                            <Stack>
+                              <Text color="red">Freelancer quit</Text>
+                              <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                            break;
+                          case "Work Started":
+                            return (
+                            <Stack>
+                              <Text color="orange" > Job Taken by : <Text fontWeight="bold" color="orange" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                              <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => openDispute(thisjob.id)}>Open a dispute</Button>
+                                </Stack>)
+                            break;
+                          case "Waiting Client Review":
+                            return (<Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              colorScheme="whatsapp"
+                              color="white"
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => setIsDone(thisjob.id)}>Validate the job</Button>)
+                            break;
+                          case "Work Finished Successfully":
+                            return (
+                            <Text color="green" > Job Done by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
+                            break;
+                          case "Dispute Opened":
+                              return (
+                                <Stack alignContent={"left"}>
+                                    <Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
+                               { address == thisjob.disputeInitiator ? (
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => jurySelection(thisjob.id)}>Launch Jury Selection</Button>
+                              ) : ( null )}
+                              </Stack>)
+                              break;
+                          case "Waiting for Jury Vote":
+                            return (
+                              <Stack alignContent={"center"}>
+                                <Text fontWeight="bold" color="orange"> Waiting for Jury Vote </Text>
+                              </Stack>
+                            )
+                            break;
+                          case "Dispute Closed":
+                            return (<Text > "Dispute Closed" </Text>)
+                            break;
+                          case "Payment Done":
+                            return (<Text > "Payment Done" </Text>)
+                            break;
+                          case "Archived":
+                              return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                            break;
+                          default:
+                            return (<Text > "default" {thisjob.state}  </Text>)
+                        }})()
+                        ) : (
+                        address == thisjob.worker ? (
+                          (() => {
+                          switch (thisjob.state) {
+                            case "Waiting for Worker":
+                            return (
+                            <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              Variant="outline"
+                              colorScheme="green"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => signContract(thisjob.id)}>Take the offer</Button>)
+                            break;
+                            case "Cancel By Client":
+                              return (<Text color="red">Job canceled by Client</Text>)
+                              break;
+                            case "Cancel By Freelancer":
+                              return (<Text color="red">Job canceled by Freelancer</Text>)
+                              break;
+                            case "Work Started":
+                              return (
+                                <Stack alignContent={"left"}>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="green"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => requestClientReview(thisjob.id)}>Request validation</Button>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => openDispute(thisjob.id)}>Open a dispute</Button>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="red"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => cancelJob(thisjob.id)}>Quit the job</Button>
+                                </Stack>
+                                )
+                              break;
+                            case "Waiting Client Review":
+                            return (<Text color="orange" > Waiting for Client Review </Text>)
+                            break;
+                            case "Work Finished Successfully":
+                              return (
+                                <Stack alignContent={"left"}>
+                                  <Text fontWeight="bold" color="green" > Job Confirmed </Text>
+                                  <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                              break;
+                            case "Dispute Opened":
+                              return (
+                                <Stack alignContent={"left"}>
+                                    <Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
+                               { address == thisjob.disputeInitiator ? (
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => jurySelection(thisjob.id)}>Launch Jury Selection</Button>
+                              ) : ( null )}
+                              </Stack>)
+                              break;
+                            case "Waiting for Jury Vote":
+                              return (
+                                <Stack alignContent={"center"}>
+                                  <Text fontWeight="bold" color="orange"> Waiting for Jury Vote </Text>
+                                </Stack>
+                              )
+                              break;
+                            case "Dispute Closed":
+                              return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
+                              break;
+                            case "Payment Done":
+                              return (<Text fontWeight="bold" color="green" > "Payment Done" </Text>)
+                              break;
+                            case "Archived":
+                                return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                              break;
+                            default:
+                              return (<Text > "default" {thisjob.state} </Text>)
+                          }})()
+                        ) : (      
+                        (() => {
+                          switch (thisjob.state) {
+                            case "Waiting for Worker":
+                            return (
+                            <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              Variant="outline"
+                              colorScheme="green"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => signContract(thisjob.id)}>Take the offer</Button>)
+                            break;
+                            case "Cancel By Client":
+                              return (<Text color="red">Job canceled by Client</Text>)
+                              break;
+                            case "Cancel By Freelancer":
+                              return (<Text color="red">Job canceled by Freelancer</Text>)
+                              break;
+                            case "Work Started":
+                              return (
+                                <Stack alignContent={"flex-end"}>
+                                  <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                </Stack>
+                                )
+                              break;
+                            case "Waiting Client Review":
+                            return (
+                              <Stack alignContent={"flex-end"}>
+                                <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                              </Stack>
+                              )
+                            break;
+                            case "Work Finished Successfully":
+                              return (
+                                <Stack alignContent={"flex-end"}>
+                                  <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                </Stack>
+                                )
+                              break;
+                            case "Dispute Opened":
+                              return(
+                                <Stack alignContent={"center"}>
+                                    <Text fontWeight="bold" color="orange"> Dispute Requested </Text>
+                                </Stack>
+                              )
+                              break;
+                            case "Waiting for Jury Vote":
+                              return (
+                                <Stack alignContent={"center"}>
+                                  <Text fontWeight="bold" color="orange"> Dispute Ongoing </Text>
+                                  {thisjob.juryMembers.map((jury, index) => (
+                                      address == jury[0] ? 
+                                      (                    
+                                        jury[1] == true ? (
+                                                <Stack alignContent={"center"}>
+                                                   <Text fontWeight="bold" color="blue"> You've voted {jury[1]}</Text>
+                                                </Stack>
+                                               ) : (
+                                                <Stack alignContent={"center"}>
+                                                <Button
+                                                leftIcon={<AiOutlineArrowRight />}
+                                                colorScheme="blue"
+                                                variant="solid"
+                                                size="sm"
+                                                rounded="md"
+                                                onClick={() => vote(thisjob.id, true)}>Vote for Client</Button>
+                                                <Button
+                                                leftIcon={<AiOutlineArrowRight />}
+                                                colorScheme="blue"
+                                                variant="outline"
+                                                size="sm"
+                                                rounded="md"
+                                                onClick={() => vote(thisjob.id, false)}>Vote for Worker</Button>
+                                                </Stack>
+                                               )                 
+                                        ) : (null)
+                                  ))}
+                                </Stack>
+                              )
+                              break;
+                            case "Dispute Closed":
+                              return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
+                              break;
+                            case "Payment Done":
+                              return (<Text fontWeight="bold" color="green" > "Payment Done" </Text>)
+                              break;
+                            case "Archived":
+                                return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                              break;
+                            default:
+                              return (<Text > "default" {thisjob.state} </Text>)
+                          }})()
+                        )
+                     ))}
+                      </Stack>
+                    </Grid>
+                    {contracts.length - 1 !== index && <Divider m={0} />}
+                  </Fragment>
+                  )
+                ))}
+              </TabPanel>
+              <TabPanel>
+                {contracts.map((thisjob, index) => (
+                  thisjob.state == "Waiting Client Review" && (
+                  <Fragment key={index}>
+                    <Grid
+                      templateRows={{ base: "auto auto", md: "auto auto" }}
+                      templateColumns={{ base: "unset", md: "4fr 2fr 2fr" }}
+                      p={{ base: 2 }}
+                      gap={3}
+                      alignItems="center"
+                      _hover={{
+                        bg: useColorModeValue("gray.200", "gray.700"),
+                      }}
+                    >
+                      <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
+                        <chakra.h3
+                          as={Link}
+                          href={`/thisjob.id`}
+                          isExternal
+                          fontWeight="bold"
+                          fontSize="lg"
+                        >
+                          <Text as="span" fontWeight="bold">Author : </Text>{thisjob.client.substring(0, 5)}...{thisjob.client.substring(thisjob.client.length - 4)}
+                          {/* {thisjob.hash.substring(0, 20) + "..."} */}
+                        </chakra.h3>
+                        <chakra.p
+                          fontWeight="medium"
+                          fontSize="sm"
+                          color={useColorModeValue("gray.600", "gray.300")}
+                        >
+                          Published: {thisjob.createAt}
+                        </chakra.p>
+                        <Badge
+                          w="max-content"
+                          textColor={useColorModeValue("white", "gray.500")}
+                          opacity="0.8"
+                          bg={colorState}
+                        >
+                          {thisjob.state}
+                        </Badge>
+                      </Box>
+                      <HStack
+                        spacing={{ base: 0, sm: 3 }}
+                        alignItems="center"
+                        fontWeight="medium"
+                        fontSize={{ base: "xs", sm: "sm" }}
+                        color={useColorModeValue("gray.600", "gray.300")}
+                      >
+                        <Flex alignItems="center" direction="column">
+                        <chakra.p
+                          fontWeight="medium"
+                          fontSize="sm"
+                          color={useColorModeValue("gray.600", "gray.300")}
+                          mb={1}
+                        >
+                          Price
+                        </chakra.p>
+                      <Badge
+                          w="max-content"
+                          color={"#552DF1"}
+                          variant="outline"
+                          border={"2px solid #552DF1"}
+                          opacity="0.8"
+                        >
+                          {thisjob.price} ETH
+                        </Badge>
+                        </Flex>
+                      </HStack>
+                        <Stack
+                        spacing={2}
+                        direction="row"
+                        fontSize={{ base: "sm", sm: "md" }}
+                        justifySelf="flex-end"
+                        alignItems="center"
+                      > 
+                      {(address == thisjob.client ? (
+                        (() => {
+                        switch (thisjob.state) {
+                          case "Waiting for Worker":
+                            return (  <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              colorScheme="red"
+                              color="white"
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => cancelJob(thisjob.id)}>Cancel</Button>)
+                            break;
+                          case "Cancel By Client":
+                            return (
+                            <Stack>
+                              <Text color="red">Job cancel</Text>
+                              <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                            break;
+                          case "Cancel By Freelancer":
+                            return (
+                            <Stack>
+                              <Text color="red">Freelancer quit</Text>
+                              <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                            break;
+                          case "Work Started":
+                            return (
+                            <Stack>
+                              <Text color="orange" > Job Taken by : <Text fontWeight="bold" color="orange" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                              <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => openDispute(thisjob.id)}>Open a dispute</Button>
+                                </Stack>)
+                            break;
+                          case "Waiting Client Review":
+                            return (<Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              colorScheme="whatsapp"
+                              color="white"
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => setIsDone(thisjob.id)}>Validate the job</Button>)
+                            break;
+                          case "Work Finished Successfully":
+                            return (
+                            <Text color="green" > Job Done by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
+                            break;
+                          case "Dispute Opened":
+                              return (
+                                <Stack alignContent={"left"}>
+                                    <Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
+                               { address == thisjob.disputeInitiator ? (
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => jurySelection(thisjob.id)}>Launch Jury Selection</Button>
+                              ) : ( null )}
+                              </Stack>)
+                              break;
+                          case "Waiting for Jury Vote":
+                            return (
+                              <Stack alignContent={"center"}>
+                                <Text fontWeight="bold" color="orange"> Waiting for Jury Vote </Text>
+                              </Stack>
+                            )
+                            break;
+                          case "Dispute Closed":
+                            return (<Text > "Dispute Closed" </Text>)
+                            break;
+                          case "Payment Done":
+                            return (<Text > "Payment Done" </Text>)
+                            break;
+                          case "Archived":
+                              return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                            break;
+                          default:
+                            return (<Text > "default" {thisjob.state}  </Text>)
+                        }})()
+                        ) : (
+                        address == thisjob.worker ? (
+                          (() => {
+                          switch (thisjob.state) {
+                            case "Waiting for Worker":
+                            return (
+                            <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              Variant="outline"
+                              colorScheme="green"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => signContract(thisjob.id)}>Take the offer</Button>)
+                            break;
+                            case "Cancel By Client":
+                              return (<Text color="red">Job canceled by Client</Text>)
+                              break;
+                            case "Cancel By Freelancer":
+                              return (<Text color="red">Job canceled by Freelancer</Text>)
+                              break;
+                            case "Work Started":
+                              return (
+                                <Stack alignContent={"left"}>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="green"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => requestClientReview(thisjob.id)}>Request validation</Button>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => openDispute(thisjob.id)}>Open a dispute</Button>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="red"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => cancelJob(thisjob.id)}>Quit the job</Button>
+                                </Stack>
+                                )
+                              break;
+                            case "Waiting Client Review":
+                            return (<Text color="orange" > Waiting for Client Review </Text>)
+                            break;
+                            case "Work Finished Successfully":
+                              return (
+                                <Stack alignContent={"left"}>
+                                  <Text fontWeight="bold" color="green" > Job Confirmed </Text>
+                                  <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                              break;
+                            case "Dispute Opened":
+                              return (
+                                <Stack alignContent={"left"}>
+                                    <Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
+                               { address == thisjob.disputeInitiator ? (
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => jurySelection(thisjob.id)}>Launch Jury Selection</Button>
+                              ) : ( null )}
+                              </Stack>)
+                              break;
+                            case "Waiting for Jury Vote":
+                              return (
+                                <Stack alignContent={"center"}>
+                                  <Text fontWeight="bold" color="orange"> Waiting for Jury Vote </Text>
+                                </Stack>
+                              )
+                              break;
+                            case "Dispute Closed":
+                              return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
+                              break;
+                            case "Payment Done":
+                              return (<Text fontWeight="bold" color="green" > "Payment Done" </Text>)
+                              break;
+                            case "Archived":
+                                return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                              break;
+                            default:
+                              return (<Text > "default" {thisjob.state} </Text>)
+                          }})()
+                        ) : (      
+                        (() => {
+                          switch (thisjob.state) {
+                            case "Waiting for Worker":
+                            return (
+                            <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              Variant="outline"
+                              colorScheme="green"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => signContract(thisjob.id)}>Take the offer</Button>)
+                            break;
+                            case "Cancel By Client":
+                              return (<Text color="red">Job canceled by Client</Text>)
+                              break;
+                            case "Cancel By Freelancer":
+                              return (<Text color="red">Job canceled by Freelancer</Text>)
+                              break;
+                            case "Work Started":
+                              return (
+                                <Stack alignContent={"flex-end"}>
+                                  <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                </Stack>
+                                )
+                              break;
+                            case "Waiting Client Review":
+                            return (
+                              <Stack alignContent={"flex-end"}>
+                                <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                              </Stack>
+                              )
+                            break;
+                            case "Work Finished Successfully":
+                              return (
+                                <Stack alignContent={"flex-end"}>
+                                  <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                </Stack>
+                                )
+                              break;
+                            case "Dispute Opened":
+                              return(
+                                <Stack alignContent={"center"}>
+                                    <Text fontWeight="bold" color="orange"> Dispute Requested </Text>
+                                </Stack>
+                              )
+                              break;
+                            case "Waiting for Jury Vote":
+                              return (
+                                <Stack alignContent={"center"}>
+                                  <Text fontWeight="bold" color="orange"> Dispute Ongoing </Text>
+                                  {thisjob.juryMembers.map((jury, index) => (
+                                      address == jury[0] ? 
+                                      (                    
+                                        jury[1] == true ? (
+                                                <Stack alignContent={"center"}>
+                                                   <Text fontWeight="bold" color="blue"> You've voted {jury[1]}</Text>
+                                                </Stack>
+                                               ) : (
+                                                <Stack alignContent={"center"}>
+                                                <Button
+                                                leftIcon={<AiOutlineArrowRight />}
+                                                colorScheme="blue"
+                                                variant="solid"
+                                                size="sm"
+                                                rounded="md"
+                                                onClick={() => vote(thisjob.id, true)}>Vote for Client</Button>
+                                                <Button
+                                                leftIcon={<AiOutlineArrowRight />}
+                                                colorScheme="blue"
+                                                variant="outline"
+                                                size="sm"
+                                                rounded="md"
+                                                onClick={() => vote(thisjob.id, false)}>Vote for Worker</Button>
+                                                </Stack>
+                                               )                 
+                                        ) : (null)
+                                  ))}
+                                </Stack>
+                              )
+                              break;
+                            case "Dispute Closed":
+                              return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
+                              break;
+                            case "Payment Done":
+                              return (<Text fontWeight="bold" color="green" > "Payment Done" </Text>)
+                              break;
+                            case "Archived":
+                                return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                              break;
+                            default:
+                              return (<Text > "default" {thisjob.state} </Text>)
+                          }})()
+                        )
+                     ))}
+                      </Stack>
+                    </Grid>
+                    {contracts.length - 1 !== index && <Divider m={0} />}
+                  </Fragment>
+                  )
+                ))}
+              </TabPanel>
+              <TabPanel>
+                {contracts.map((thisjob, index) => (
+                  thisjob.disputeId != 0 && (
+                  <Fragment key={index}>
+                    <Grid
+                      templateRows={{ base: "auto auto", md: "auto auto" }}
+                      templateColumns={{ base: "unset", md: "4fr 2fr 2fr" }}
+                      p={{ base: 2 }}
+                      gap={3}
+                      alignItems="center"
+                      _hover={{
+                        bg: useColorModeValue("gray.200", "gray.700"),
+                      }}
+                    >
+                      <Box gridColumnEnd={{ base: "span 2", md: "unset" }}>
+                        <chakra.h3
+                          as={Link}
+                          href={`/thisjob.id`}
+                          isExternal
+                          fontWeight="bold"
+                          fontSize="lg"
+                        >
+                          <Text as="span" fontWeight="bold">Author : </Text>{thisjob.client.substring(0, 5)}...{thisjob.client.substring(thisjob.client.length - 4)}
+                          {/* {thisjob.hash.substring(0, 20) + "..."} */}
+                        </chakra.h3>
+                        <chakra.p
+                          fontWeight="medium"
+                          fontSize="sm"
+                          color={useColorModeValue("gray.600", "gray.300")}
+                        >
+                          Published: {thisjob.createAt}
+                        </chakra.p>
+                        <Badge
+                          w="max-content"
+                          textColor={useColorModeValue("white", "gray.500")}
+                          opacity="0.8"
+                          bg={colorState}
+                        >
+                          {thisjob.state}
+                        </Badge>
+                      </Box>
+                      <HStack
+                        spacing={{ base: 0, sm: 3 }}
+                        alignItems="center"
+                        fontWeight="medium"
+                        fontSize={{ base: "xs", sm: "sm" }}
+                        color={useColorModeValue("gray.600", "gray.300")}
+                      >
+                        <Flex alignItems="center" direction="column">
+                        <chakra.p
+                          fontWeight="medium"
+                          fontSize="sm"
+                          color={useColorModeValue("gray.600", "gray.300")}
+                          mb={1}
+                        >
+                          Price
+                        </chakra.p>
+                      <Badge
+                          w="max-content"
+                          color={"#552DF1"}
+                          variant="outline"
+                          border={"2px solid #552DF1"}
+                          opacity="0.8"
+                        >
+                          {thisjob.price} ETH
+                        </Badge>
+                        </Flex>
+                      </HStack>
+                        <Stack
+                        spacing={2}
+                        direction="row"
+                        fontSize={{ base: "sm", sm: "md" }}
+                        justifySelf="flex-end"
+                        alignItems="center"
+                      > 
+                      {(address == thisjob.client ? (
+                        (() => {
+                        switch (thisjob.state) {
+                          case "Waiting for Worker":
+                            return (  <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              colorScheme="red"
+                              color="white"
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => cancelJob(thisjob.id)}>Cancel</Button>)
+                            break;
+                          case "Cancel By Client":
+                            return (
+                            <Stack>
+                              <Text color="red">Job cancel</Text>
+                              <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                            break;
+                          case "Cancel By Freelancer":
+                            return (
+                            <Stack>
+                              <Text color="red">Freelancer quit</Text>
+                              <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                            break;
+                          case "Work Started":
+                            return (
+                            <Stack>
+                              <Text color="orange" > Job Taken by : <Text fontWeight="bold" color="orange" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                              <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => openDispute(thisjob.id)}>Open a dispute</Button>
+                                </Stack>)
+                            break;
+                          case "Waiting Client Review":
+                            return (<Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              colorScheme="whatsapp"
+                              color="white"
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => setIsDone(thisjob.id)}>Validate the job</Button>)
+                            break;
+                          case "Work Finished Successfully":
+                            return (
+                            <Text color="green" > Job Done by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>)
+                            break;
+                          case "Dispute Opened":
+                              return (
+                                <Stack alignContent={"left"}>
+                                    <Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
+                               { address == thisjob.disputeInitiator ? (
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => jurySelection(thisjob.id)}>Launch Jury Selection</Button>
+                              ) : ( null )}
+                              </Stack>)
+                              break;
+                          case "Waiting for Jury Vote":
+                            return (
+                              <Stack alignContent={"center"}>
+                                <Text fontWeight="bold" color="orange"> Waiting for Jury Vote </Text>
+                              </Stack>
+                            )
+                            break;
+                          case "Dispute Closed":
+                            return (<Text > "Dispute Closed" </Text>)
+                            break;
+                          case "Payment Done":
+                            return (<Text > "Payment Done" </Text>)
+                            break;
+                          case "Archived":
+                              return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                            break;
+                          default:
+                            return (<Text > "default" {thisjob.state}  </Text>)
+                        }})()
+                        ) : (
+                        address == thisjob.worker ? (
+                          (() => {
+                          switch (thisjob.state) {
+                            case "Waiting for Worker":
+                            return (
+                            <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              Variant="outline"
+                              colorScheme="green"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => signContract(thisjob.id)}>Take the offer</Button>)
+                            break;
+                            case "Cancel By Client":
+                              return (<Text color="red">Job canceled by Client</Text>)
+                              break;
+                            case "Cancel By Freelancer":
+                              return (<Text color="red">Job canceled by Freelancer</Text>)
+                              break;
+                            case "Work Started":
+                              return (
+                                <Stack alignContent={"left"}>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="green"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => requestClientReview(thisjob.id)}>Request validation</Button>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => openDispute(thisjob.id)}>Open a dispute</Button>
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="red"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => cancelJob(thisjob.id)}>Quit the job</Button>
+                                </Stack>
+                                )
+                              break;
+                            case "Waiting Client Review":
+                            return (<Text color="orange" > Waiting for Client Review </Text>)
+                            break;
+                            case "Work Finished Successfully":
+                              return (
+                                <Stack alignContent={"left"}>
+                                  <Text fontWeight="bold" color="green" > Job Confirmed </Text>
+                                  <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              color="#552DF1"
+                              border={"2px solid #552DF1"}
+                              variant="solid"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => withdrawFunds(thisjob.id)}>Withdraw</Button>
+                              </Stack>)
+                              break;
+                            case "Dispute Opened":
+                              return (
+                                <Stack alignContent={"left"}>
+                                    <Text color="red"> Dispute Opened by : <Text fontWeight="bold" color="red" >{thisjob.disputeInitiator.substring(0, 5)}...{thisjob.disputeInitiator.substring(thisjob.disputeInitiator.length - 4)}</Text></Text>
+                               { address == thisjob.disputeInitiator ? (
+                                <Button    
+                                leftIcon={<AiOutlineArrowRight />}
+                                colorScheme="orange"
+                                color="white"
+                                variant="solid"
+                                size="sm"
+                                rounded="md"
+                                onClick={() => jurySelection(thisjob.id)}>Launch Jury Selection</Button>
+                              ) : ( null )}
+                              </Stack>)
+                              break;
+                            case "Waiting for Jury Vote":
+                              return (
+                                <Stack alignContent={"center"}>
+                                  <Text fontWeight="bold" color="orange"> Waiting for Jury Vote </Text>
+                                </Stack>
+                              )
+                              break;
+                            case "Dispute Closed":
+                              return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
+                              break;
+                            case "Payment Done":
+                              return (<Text fontWeight="bold" color="green" > "Payment Done" </Text>)
+                              break;
+                            case "Archived":
+                                return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                              break;
+                            default:
+                              return (<Text > "default" {thisjob.state} </Text>)
+                          }})()
+                        ) : (      
+                        (() => {
+                          switch (thisjob.state) {
+                            case "Waiting for Worker":
+                            return (
+                            <Button    
+                              leftIcon={<AiOutlineArrowRight />}
+                              Variant="outline"
+                              colorScheme="green"
+                              size="sm"
+                              rounded="md"
+                              onClick={() => signContract(thisjob.id)}>Take the offer</Button>)
+                            break;
+                            case "Cancel By Client":
+                              return (<Text color="red">Job canceled by Client</Text>)
+                              break;
+                            case "Cancel By Freelancer":
+                              return (<Text color="red">Job canceled by Freelancer</Text>)
+                              break;
+                            case "Work Started":
+                              return (
+                                <Stack alignContent={"flex-end"}>
+                                  <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                </Stack>
+                                )
+                              break;
+                            case "Waiting Client Review":
+                            return (
+                              <Stack alignContent={"flex-end"}>
+                                <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                              </Stack>
+                              )
+                            break;
+                            case "Work Finished Successfully":
+                              return (
+                                <Stack alignContent={"flex-end"}>
+                                  <Text color="green" > Job Took by : <Text fontWeight="bold" color="green" >{thisjob.worker.substring(0, 5)}...{thisjob.worker.substring(thisjob.worker.length - 4)}</Text></Text>
+                                </Stack>
+                                )
+                              break;
+                            case "Dispute Opened":
+                              return(
+                                <Stack alignContent={"center"}>
+                                    <Text fontWeight="bold" color="orange"> Dispute Requested </Text>
+                                </Stack>
+                              )
+                              break;
+                            case "Waiting for Jury Vote":
+                              return (
+                                <Stack alignContent={"center"}>
+                                  <Text fontWeight="bold" color="orange"> Dispute Ongoing </Text>
+                                  {thisjob.juryMembers.map((jury, index) => (
+                                      address == jury[0] ? 
+                                      (                    
+                                        jury[1] == true ? (
+                                                <Stack alignContent={"center"}>
+                                                   <Text fontWeight="bold" color="blue"> You've voted {jury[1]}</Text>
+                                                </Stack>
+                                               ) : (
+                                                <Stack alignContent={"center"}>
+                                                <Button
+                                                leftIcon={<AiOutlineArrowRight />}
+                                                colorScheme="blue"
+                                                variant="solid"
+                                                size="sm"
+                                                rounded="md"
+                                                onClick={() => vote(thisjob.id, true)}>Vote for Client</Button>
+                                                <Button
+                                                leftIcon={<AiOutlineArrowRight />}
+                                                colorScheme="blue"
+                                                variant="outline"
+                                                size="sm"
+                                                rounded="md"
+                                                onClick={() => vote(thisjob.id, false)}>Vote for Worker</Button>
+                                                </Stack>
+                                               )                 
+                                        ) : (null)
+                                  ))}
+                                </Stack>
+                              )
+                              break;
+                            case "Dispute Closed":
+                              return (<Text fontWeight="bold" color="blue" > "Dispute Closed" </Text>)
+                              break;
+                            case "Payment Done":
+                              return (<Text fontWeight="bold" color="green" > "Payment Done" </Text>)
+                              break;
+                            case "Archived":
+                                return (<Text fontWeight="bold" color="gray.800" > Job closed </Text>)
+                              break;
+                            default:
+                              return (<Text > "default" {thisjob.state} </Text>)
+                          }})()
+                        )
+                     ))}
+                      </Stack>
+                    </Grid>
+                    {contracts.length - 1 !== index && <Divider m={0} />}
+                  </Fragment>
+                  )
+                ))}
+              </TabPanel>
             </TabPanels>
           </Tabs>
-        </VStack>
+        </VStack>)
+        :  
+        (<Text>Please connect your wallet to see your jobs.</Text>)
+        }
       </VStack>
   );
 };

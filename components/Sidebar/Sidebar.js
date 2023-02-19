@@ -47,7 +47,7 @@ import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
 const LinkItems = ([] = [
   { name: "Dashboard", icon: FiHome },
   { name: "Jobs", icon: FiList },
-  { name: "Freelance", icon: FiCompass },
+  // { name: "Freelance", icon: FiCompass },
   { name: "Wallet", icon: FiStar },
   { name: "Settings", icon: FiSettings },
 ]);

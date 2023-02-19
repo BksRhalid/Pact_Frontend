@@ -70,10 +70,8 @@ export default function Home() {
       direction={{ base: "column", md: "row" }}
       align={{ base: "center", md: "flex-start" }}
     >
-      {/* Job Board Overview */}
-      <Jobboard />
       {/* Profil settings */}
-      <VStack
+      {/* <VStack
         as="form"
         spacing={8}
         w={{ base: "100%", md: "30%" }}
@@ -170,7 +168,9 @@ export default function Home() {
             )}
           </Flex>
         </Flex>
-      </VStack>
+      </VStack> */}
+      {/* Job Board Overview */}
+      <Jobboard />
     </Flex>
   );
 }

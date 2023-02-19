@@ -207,10 +207,6 @@ const Settings = () => {
         p={{ base: 5 }}
         m={{ base: 5 }}
       >
-        <VStack spacing={4} w="50%">
-          
-
-        </VStack>
       </VStack>
       
       {isConnected ? (
