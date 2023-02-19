@@ -125,6 +125,8 @@ export default function Job() {
     }
   }, [isConnected, address]);
 
+
+
   const getDatas = async () => {
       const contract = new ethers.Contract(contractAddress, abi, provider);      
       const isClient = await contract.connect(address).isClient();
@@ -194,53 +196,85 @@ export default function Job() {
   const getContractStates = (expr) => {
     switch (expr) {
       case 0:
-        setColorState("gray.500")
         return "Waiting for Worker"
           break
       case 1:
-        setColorState("green.500")
         return "Work Started"
           break
       case 2:
-        setColorState("orange")
         return "Waiting Client Review"
         break
       case 3:
-        setColorState("green.500")
         return "Work Finished Successfully"
         break
       case 4:
-        setColorState("red.500")
         return "Dispute Opened"
           break 
       case 5:
-          setColorState("red.500")
           return "Waiting for Jury Vote" 
       case 5:
-        setColorState("red.500")
         return "Client Lost Dispute"
           break
       case 6:
-        setColorState("red.500")
         return "Worker Lost Dispute"
         break     
         case 7:
-          setColorState("blue.500")
           return "Dispute Closed"  
         break 
         case 8:
-          setColorState("red.500")
           return "Cancel By Freelancer"
         break 
         case 9:
-          setColorState("red.500")
           return "Cancel By Client" 
         break  
         case 10:
-          setColorState("gray.500")
           return "Archived"  
         break    
         default:
+        return null
+    }
+  }
+
+  // colorTag function 
+  const colorTag = (status) => {
+    switch (status) {
+      case "Waiting for Worker":
+        return "gray.500"
+        break
+      case "Work Started":
+        return "green.500"
+        break
+      case "Waiting Client Review":
+        return "orange"
+        break
+      case "Work Finished Successfully":
+        return "green.500"
+        break
+      case "Dispute Opened":
+        return "red.500"
+        break
+      case "Waiting for Jury Vote":
+        return "red.500"
+        break
+      case "Client Lost Dispute":
+        return "red.500"
+        break
+      case "Worker Lost Dispute":
+        return "red.500"
+        break
+      case "Dispute Closed":
+        return "blue.500"
+        break
+      case "Cancel By Freelancer":
+        return "red.500"
+        break
+      case "Cancel By Client":
+        return "red.500"
+        break
+      case "Archived":
+        return "gray.500"
+        break
+      default:
         return null
     }
   }
@@ -460,7 +494,12 @@ const withdrawFunds = async(id) => {
     })
   }
 }
-  return (
+
+
+
+
+
+return (
       <VStack
         as="form"
         spacing={4}
@@ -527,7 +566,7 @@ const withdrawFunds = async(id) => {
                           w="max-content"
                           textColor={useColorModeValue("white", "gray.500")}
                           opacity="0.8"
-                          bg={colorState}
+                          bg={colorTag(thisjob.state)}
                         >
                           {thisjob.state}
                         </Badge>
@@ -909,7 +948,7 @@ const withdrawFunds = async(id) => {
                           w="max-content"
                           textColor={useColorModeValue("white", "gray.500")}
                           opacity="0.8"
-                          bg={colorState}
+                          bg={colorTag(thisjob.state)}
                         >
                           {thisjob.state}
                         </Badge>
@@ -1292,7 +1331,7 @@ const withdrawFunds = async(id) => {
                           w="max-content"
                           textColor={useColorModeValue("white", "gray.500")}
                           opacity="0.8"
-                          bg={colorState}
+                          bg={colorTag(thisjob.state)}
                         >
                           {thisjob.state}
                         </Badge>
@@ -1675,7 +1714,7 @@ const withdrawFunds = async(id) => {
                           w="max-content"
                           textColor={useColorModeValue("white", "gray.500")}
                           opacity="0.8"
-                          bg={colorState}
+                          bg={colorTag(thisjob.state)}
                         >
                           {thisjob.state}
                         </Badge>

@@ -193,7 +193,8 @@ const newJob = () => {
               </VStack>
               <VStack w="100%">
                 <Flex w="100%" justify="space-between">
-                  <Button
+                  {/* // TODO : Firebase to save draft not implemented yet */}
+                  {/* <Button
                     leftIcon={<MdAdd />}
                     size={"sm"}
                     color={"green.500"}
@@ -210,7 +211,7 @@ const newJob = () => {
                   >
                     Save as draft
                   </Button>
-                  <Spacer />
+                  <Spacer /> */}
                   <Button
                     leftIcon={<MdAdd />}
                     size={"sm"}
