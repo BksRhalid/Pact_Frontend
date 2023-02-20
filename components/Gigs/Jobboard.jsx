@@ -454,7 +454,7 @@ const revealVerdict = async(id) => {
 const withdrawFunds = async(id) => {
   try {
     const contract = new ethers.Contract(contractAddress, abi, signer)
-    let transaction = await contract.pullPayment(id)
+    let transaction = await contract.pullPayment(id, {gasLimit: 30000000})
     await transaction.wait(1)
     toast({
       title: 'Congratulations!',
