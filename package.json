@@ -1,5 +1,5 @@
 {
-  "name": "todo",
+  "name": "pact",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ajna/pagination": "^1.4.19",
     "@chakra-ui/icon": "^3.0.15",
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/react": "^2.4.9",
