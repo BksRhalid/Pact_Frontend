@@ -33,7 +33,7 @@ const Auth = () => {
     const [isWorker, setIsWorker] = useState(false);
 
 
-    const { isLoggedIn, user } = useAuth();
+    // const { isLoggedIn, user } = useAuth();
     const handleAuth = async () => {
     const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
@@ -71,7 +71,7 @@ const Auth = () => {
       const isWorker = await contract.connect(address).isWorker();
       setIsClient(isClient);
       setIsWorker(isWorker);
-  };
+    };
 
 return (
     <>

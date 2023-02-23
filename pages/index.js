@@ -1,23 +1,7 @@
-import Head from "next/head";
-import Image from "next/image";
 import React from "react";
 import { useState, useEffect } from "react";
 
-// Here we have used react-icons package for the icons
-import { AiFillCheckCircle, AiFillCloseCircle } from "react-icons/ai";
-import { RiArrowRightSLine } from "react-icons/ri";
-
-import {
-  Flex,
-  Text,
-  useToast,
-  useColorModeValue,
-  chakra,
-  Link,
-  VStack,
-  Icon,
-  Button,
-} from "@chakra-ui/react";
+import { Flex, useToast } from "@chakra-ui/react";
 
 import { abi, contractAddress } from "@/constants";
 import { useAccount, useProvider } from "wagmi";
