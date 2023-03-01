@@ -315,50 +315,6 @@ export const abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "_contractId",
-        type: "uint256",
-      },
-    ],
-    name: "getContractDetails",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "contractId",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "client",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "worker",
-        type: "address",
-      },
-      {
-        internalType: "bytes32",
-        name: "hashJob",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint256",
-        name: "deadline",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "price",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
         name: "_disputeId",
         type: "uint256",
       },

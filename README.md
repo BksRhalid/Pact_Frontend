@@ -18,9 +18,7 @@
     <a href="https://github.com/BksRhalid/Pact_Frontend.git"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/BksRhalid/Pact_Frontend.git/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/BksRhalid/Pact_Frontend.git/features">Request Feature</a>
+    <a href="https://drive.google.com/file/d/1Vyh0pAuHNHYqMDo-ZWH71mUt8EWrTdN8/view">Video Demo</a>
   </p>
 </div>
 
@@ -97,13 +95,13 @@ In this context, we have created three test files: :
       ✔ should NOT create a second dispute (325ms)
       ✔ should NOT revert select a jury (454ms)
       ✔ should get 3 juryMembers (190ms)
-    🔎 Test function of Voting process 
+    🔎 Test function of Voting process
       ✔ should return the correct juryCounter (67ms)
       ✔ should return false if juryMembers has no voted
       ✔ should return true if juryMembers has voted (288ms)
       ✔ should change vote count for client (111ms)
       ✔ should change vote count for worker (192ms)
-    🔎 Test function count Vote and change the State 
+    🔎 Test function count Vote and change the State
       ✔ should change state ClientLostInDispute  (329ms)
       ✔ should change state WorkerLostInDispute  (478ms)
     🔎 Unit Test of payments related functions and events when works is confirm by Clients
@@ -115,12 +113,14 @@ In this context, we have created three test files: :
       ✔ should NOT allow client to pull payment
       ✔ should allow worker to pull payments and not fail (262ms)
       ✔ should allow client to pull payments after worker cancel (52ms)
-    🔎 Unit Test of payments related functions and events after dispute opened 
+    🔎 Unit Test of payments related functions and events after dispute opened
       ✔ should Revert as Dispute isn't closed
       ✔ should NOT allow client to pull payment (185ms)
   ```
 
-  ````
+  ```
+
+  ```
 
 <strong> Below the coverage report of the test :</strong>
 
